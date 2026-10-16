@@ -1,0 +1,831 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+import { ui, site, locales, langNames, path, type Lang } from '../i18n/ui';
+import { listings, photos, type ListingType } from '../data/listings';
+import { reviews } from '../data/reviews';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+const types: ListingType[] = ['apartment', 'house', 'office'];
+const fmt = (n: number) => n.toLocaleString('ru-RU').replace(/,/g, ' ');
+const wa = (text: string) => `${site.whatsapp}?text=${encodeURIComponent(text)}`;
+const tg = (text: string) => `${site.telegram}?text=${encodeURIComponent(text)}`;
+const tel = `tel:${site.phone.replace(/\s/g, '')}`;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="icon" type="image/png" href="/img/logo.png" />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={path(l)} />)}
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:image" content="/img/hero.jpg" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav__inner">
+        <a class="logo" href={path(lang)} aria-label="Malaga Community">
+          <span class="logo__top">MALAGA</span>
+          <span class="logo__bottom"><em>C</em>OMMUNITY</span>
+        </a>
+        <nav class="nav__links">
+          <a href="#search">{t.nav.search}</a>
+          <a href="#process">{t.nav.process}</a>
+          <a href="#social">{t.nav.social}</a>
+          <a href="#reviews">{t.nav.reviews}</a>
+          <a href="#sale">{t.nav.sale}</a>
+          <a href="#contact">{t.nav.contact}</a>
+        </nav>
+        <div class="nav__side">
+          <div class="lang">
+            {
+              locales.map((l) => (
+                <a href={path(l)} class:list={{ 'is-active': l === lang }} hreflang={l}>
+                  {langNames[l]}
+                </a>
+              ))
+            }
+          </div>
+          <a class="btn btn--small" href={wa(t.contact.hello)} target="_blank" rel="noopener">{t.nav.cta}</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap stack">
+      <section class="tile hero">
+        <img class="tile__bg" src="/img/hero.jpg" alt="" />
+        <div class="hero__text">
+          <h1>
+            {t.hero.title}
+            <span>{t.hero.cities}</span>
+          </h1>
+          <p class="hero__lead">{t.hero.lead}</p>
+          <p class="hero__sub">{t.hero.text}</p>
+          <div class="actions">
+            <a class="btn btn--white" href={wa(t.contact.hello)} target="_blank" rel="noopener">{t.hero.primary}</a>
+            <a class="link link--white" href="#process">{t.hero.secondary}</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="tile" id="search">
+        <div class="head">
+          <div>
+            <p class="eyebrow">{t.search.eyebrow}</p>
+            <h2>{t.search.title}</h2>
+            <p class="lead">{t.search.lead}</p>
+          </div>
+          <div class="tabs" role="tablist">
+            {
+              types.map((type, i) => (
+                <button
+                  class:list={['tab', { 'is-active': i === 0 }]}
+                  role="tab"
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  data-tab={type}
+                >
+                  {t.search.tabs[type]}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="rail-wrap">
+        {
+          types.map((type, i) => (
+            <div class="rail" data-rail={type} hidden={i !== 0}>
+              {listings[type].map((item) => {
+                const msg = `${t.search.message}: ${t.search.tabs[type].toLowerCase()}, ${item.area}, ${item.city}.`;
+                return (
+                  <article class="card">
+                    <div class="card__photo">
+                      <img src={photos[type]} alt="" loading="lazy" />
+                      <span class="card__price">
+                        {t.search.from} {fmt(item.price)} {t.search.perMonth}
+                      </span>
+                    </div>
+                    <div class="card__body">
+                      <p class="card__city">{item.city}</p>
+                      <h3>{item.area}</h3>
+                      <p class="card__desc">{item.desc[lang]}</p>
+                      <p class="card__specs">
+                        {item.beds && <span>{t.search.beds}: {item.beds}</span>}
+                        <span>{item.m2} m²</span>
+                      </p>
+                      <div class="card__actions">
+                        <a class="btn btn--small" href={wa(msg)} target="_blank" rel="noopener">{t.search.whatsapp}</a>
+                        <a class="link" href={tg(msg)} target="_blank" rel="noopener">{t.search.telegram}</a>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ))
+        }
+
+          <button class="arrow arrow--prev" data-dir="-1" aria-label={t.search.prev}>‹</button>
+          <button class="arrow arrow--next" data-dir="1" aria-label={t.search.next}>›</button>
+        </div>
+      </section>
+
+      <section class="tile tile--tint" id="process">
+        <div class="process">
+          <div class="process__head">
+            <p class="eyebrow">{t.process.eyebrow}</p>
+            <h2>{t.process.title}</h2>
+            <p class="lead">{t.process.lead}</p>
+            <a class="btn" href={wa(t.contact.hello)} target="_blank" rel="noopener">{t.hero.primary}</a>
+          </div>
+          <ol class="steps">
+            {
+              t.process.steps.map((s, i) => (
+                <li class="step">
+                  <span class="step__num">{i + 1}</span>
+                  <h3>{s.title}</h3>
+                  <p>{s.text}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </section>
+
+      <section class="tile" id="social">
+        <div class="head">
+          <div>
+            <p class="eyebrow">{t.social.eyebrow}</p>
+            <h2>{t.social.title}</h2>
+            <p class="lead">{t.social.lead}</p>
+          </div>
+          <div class="nets">
+            <a class="net net--instagram" href={site.instagram} target="_blank" rel="noopener">
+              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg></span>
+              <strong>{t.social.links.instagram}</strong>
+              <small>{t.social.go} ›</small>
+            </a>
+            <a class="net net--telegram" href={site.telegramChat} target="_blank" rel="noopener">
+              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2.2M21 4l-3 15-9-5.8M21 4 9 13.2V19l3.2-3.4"></path></svg></span>
+              <strong>{t.social.links.telegram}</strong>
+              <small>{t.social.go} ›</small>
+            </a>
+            <a class="net net--tiktok" href={site.tiktok} target="_blank" rel="noopener">
+              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.6a3.6 3.6 0 1 1-3.2-3.6"></path><path d="M14 4c.3 2.4 1.9 4 4.6 4.2"></path></svg></span>
+              <strong>{t.social.links.tiktok}</strong>
+              <small>{t.social.go} ›</small>
+            </a>
+            <a class="net net--facebook" href={site.facebook} target="_blank" rel="noopener">
+              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.2h2.3V4.6h-2.7a3.6 3.6 0 0 0-3.6 3.6v2.5H7.8v3.5h2.4V20h3.7v-5.8h2.4l.5-3.5h-2.9V8.9c0-.4.3-.7.7-.7Z"></path></svg></span>
+              <strong>{t.social.links.facebook}</strong>
+              <small>{t.social.go} ›</small>
+            </a>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="device">
+            <a class="device__shot" href={site.instagram} target="_blank" rel="noopener" aria-label={t.social.open}>
+              <img src="/img/instagram.jpg" alt="Instagram @arenda_kvartir_malaga_madrid" loading="lazy" />
+            </a>
+            <div
+              class="ig"
+              data-ig
+              data-feed={site.beholdFeed}
+              data-title={site.igTitle}
+              data-posts-count={site.igPostsCount}
+              data-profile={site.instagram}
+              data-open={t.social.open}
+              data-followers={t.social.followers}
+              data-following={t.social.following}
+              data-posts={t.social.posts}
+              data-likes={t.social.likes}
+              data-comments={t.social.comments}
+              hidden
+            ></div>
+            <template data-ig-hl>
+              <div class="ig__hl">
+                {
+                  site.highlights.map((h) => (
+                    <a href={h.url} target="_blank" rel="noopener">
+                      <span class="ig__hl-ring">
+                        {
+                          h.cover ? (
+                            <img src={h.cover} alt="" loading="lazy" />
+                          ) : (
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              {
+                                {
+                                  home: <path d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4Z" />,
+                                  like: <path d="M7 11v9H4v-9Zm3 9h7.2a2 2 0 0 0 2-1.6l1.2-6A2 2 0 0 0 18.4 10H14l.8-3.6A1.6 1.6 0 0 0 13.2 4.5L10 10Z" />,
+                                  info: <path d="M12 10.5V17M12 7.2v.1" />,
+                                }[h.icon]
+                              }
+                            </svg>
+                          )
+                        }
+                      </span>
+                      {h.title}
+                    </a>
+                  ))
+                }
+              </div>
+            </template>
+          </div>
+
+          <button class="clip" type="button" data-player aria-label={t.social.watch}>
+            <video src="/video/intro.mp4#t=0.1" playsinline preload="auto"></video>
+            <span class="video__play" aria-hidden="true"></span>
+            <span class="video__bar" aria-hidden="true"><span></span></span>
+          </button>
+        </div>
+      </section>
+
+      <div class="duo duo--wide" id="reviews">
+        <section class="tile">
+          <p class="eyebrow">{t.reviews.eyebrow}</p>
+          <div class="slider" data-slider>
+            <div class="slider__track">
+              {
+                reviews.map((r) => (
+                  <figure class="quote">
+                    <blockquote>{r.quote[lang]}</blockquote>
+                    <figcaption>
+                      {r.avatar && <img src={r.avatar} alt="" width="56" height="56" loading="lazy" />}
+                      {r.author[lang]}
+                    </figcaption>
+                  </figure>
+                ))
+              }
+            </div>
+            {
+              reviews.length > 1 && (
+                <div class="slider__nav">
+                  <div class="dots">
+                    {reviews.map((_, i) => <span class:list={['dot', { 'is-active': i === 0 }]} />)}
+                  </div>
+                  <div class="arrows">
+                    <button class="arrow" data-slide="-1" aria-label={t.search.prev}>‹</button>
+                    <button class="arrow" data-slide="1" aria-label={t.search.next}>›</button>
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </section>
+        <a class="tile tile--accent more" href={site.reviews} target="_blank" rel="noopener">
+          <span class="more__icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
+                <circle cx="12" cy="12" r="4.2"></circle>
+                <circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle>
+              </svg>
+          </span>
+          <h3>{t.reviews.moreTitle}</h3>
+          <p>{t.reviews.moreText}</p>
+          <span class="more__btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
+                <circle cx="12" cy="12" r="4.2"></circle>
+                <circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle>
+              </svg>
+            {t.reviews.more}
+          </span>
+        </a>
+      </div>
+
+      <div class="duo" id="contact">
+        <section class="tile panel">
+          <p class="eyebrow">{t.contact.eyebrow}</p>
+          <h2>{t.contact.title}</h2>
+          <p class="lead">{t.contact.lead}</p>
+          <ul class="ways">
+            <li>
+              <a class="way" href={wa(t.contact.hello)} target="_blank" rel="noopener">
+                <span class="way__icon way__icon--accent">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12Z"></path></svg>
+                </span>
+                <span class="way__text"><strong>{t.contact.whatsapp}</strong><small>{t.contact.write}</small></span>
+              </a>
+            </li>
+            <li>
+              <a class="way" href={tg(t.contact.hello)} target="_blank" rel="noopener">
+                <span class="way__icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2.2M21 4l-3 15-9-5.8M21 4 9 13.2V19l3.2-3.4"></path></svg>
+                </span>
+                <span class="way__text"><strong>{t.contact.telegram}</strong><small>{t.contact.write}</small></span>
+              </a>
+            </li>
+            <li>
+              <a class="way" href={tel}>
+                <span class="way__icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"></path></svg>
+                </span>
+                <span class="way__text"><strong>{site.phone}</strong><small>{t.contact.call}</small></span>
+              </a>
+            </li>
+          </ul>
+        </section>
+        <section class="tile tile--photo panel" id="sale">
+          <img class="tile__bg" src="/img/house.jpg" alt="" loading="lazy" />
+          <p class="eyebrow">{t.sale.eyebrow}</p>
+          <h2>{t.sale.title}</h2>
+          <p class="lead">{t.sale.text}</p>
+          <span class="btn btn--ghost" aria-disabled="true">{t.sale.button}</span>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer__inner">
+        <a class="logo logo--big" href={path(lang)} aria-label="Malaga Community">
+          <span class="logo__top">MALAGA</span>
+          <span class="logo__bottom"><em>C</em>OMMUNITY</span>
+        </a>
+        <nav class="footer__links">
+          <a href={site.instagram} target="_blank" rel="noopener">{t.social.links.instagram}</a>
+          <a href={site.telegramChat} target="_blank" rel="noopener">{t.social.links.telegram}</a>
+          <a href={site.tiktok} target="_blank" rel="noopener">{t.social.links.tiktok}</a>
+          <a href={site.facebook} target="_blank" rel="noopener">{t.social.links.facebook}</a>
+        </nav>
+        <p class="footer__meta">
+          {site.address} · <a href={tel}>{site.phone}</a><br />
+          © {year} Malaga Community. {t.footer.rights}
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      const tabs = document.querySelectorAll<HTMLButtonElement>('[data-tab]');
+      const rails = document.querySelectorAll<HTMLElement>('[data-rail]');
+      const activeRail = () => [...rails].find((r) => !r.hidden);
+
+      const railArrows = document.querySelectorAll<HTMLButtonElement>('.rail-wrap > .arrow');
+      const step = (rail: HTMLElement) => {
+        const card = rail.querySelector<HTMLElement>('.card');
+        return card ? card.offsetWidth + 16 : rail.clientWidth;
+      };
+      const updateArrows = () => {
+        const rail = activeRail();
+        if (!rail) return;
+        const max = rail.scrollWidth - rail.clientWidth - 2;
+        railArrows.forEach((btn) => {
+          const off = btn.dataset.dir === '-1' ? rail.scrollLeft <= 2 : rail.scrollLeft >= max;
+          btn.classList.toggle('is-off', off);
+        });
+      };
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((t) => {
+            const on = t === tab;
+            t.classList.toggle('is-active', on);
+            t.setAttribute('aria-selected', String(on));
+          });
+          rails.forEach((r) => {
+            r.hidden = r.dataset.rail !== tab.dataset.tab;
+            if (!r.hidden) r.scrollLeft = 0;
+          });
+          updateArrows();
+        });
+      });
+
+      railArrows.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const rail = activeRail();
+          if (rail) rail.scrollBy({ left: Number(btn.dataset.dir) * step(rail), behavior: 'smooth' });
+        });
+      });
+
+      // Перетаскивание мышью; на тачскрине и тачпаде лента листается сама
+      rails.forEach((rail) => {
+        let down = false;
+        let moved = false;
+        let startX = 0;
+        let startLeft = 0;
+
+        rail.addEventListener('scroll', updateArrows, { passive: true });
+        rail.addEventListener('dragstart', (e) => e.preventDefault());
+        rail.addEventListener('pointerdown', (e) => {
+          if (e.pointerType !== 'mouse' || e.button !== 0) return;
+          down = true;
+          moved = false;
+          startX = e.clientX;
+          startLeft = rail.scrollLeft;
+        });
+        window.addEventListener('pointermove', (e) => {
+          if (!down) return;
+          const dx = e.clientX - startX;
+          if (!moved && Math.abs(dx) > 5) {
+            moved = true;
+            rail.classList.add('is-dragging');
+          }
+          if (moved) rail.scrollLeft = startLeft - dx;
+        });
+        window.addEventListener('pointerup', () => {
+          if (!down) return;
+          down = false;
+          if (!moved) return;
+          const size = step(rail);
+          rail.scrollTo({ left: Math.round(rail.scrollLeft / size) * size, behavior: 'smooth' });
+          setTimeout(() => rail.classList.remove('is-dragging'), 350);
+        });
+        // после перетаскивания не открываем ссылку, на которой отпустили кнопку
+        rail.addEventListener(
+          'click',
+          (e) => {
+            if (!moved) return;
+            e.preventDefault();
+            e.stopPropagation();
+            moved = false;
+          },
+          true,
+        );
+      });
+
+      window.addEventListener('resize', updateArrows);
+      updateArrows();
+
+      // Лента Instagram из Behold: только на компьютере, на телефоне остаётся переход в Instagram
+      const ig = document.querySelector<HTMLElement>('[data-ig]');
+      const feedId = new URLSearchParams(location.search).get('feed') || ig?.dataset.feed;
+      if (ig && feedId && window.matchMedia('(min-width: 721px)').matches) {
+        type Size = { mediaUrl: string };
+        type Media = {
+          mediaType: string;
+          mediaUrl?: string;
+          thumbnailUrl?: string;
+          altText?: string;
+          sizes?: { small?: Size; medium?: Size; large?: Size };
+        };
+        type Post = Media & {
+          permalink: string;
+          caption?: string;
+          prunedCaption?: string;
+          likeCount?: number;
+          commentsCount?: number;
+          timestamp?: string;
+          children?: Media[];
+        };
+        type Feed = {
+          username?: string;
+          biography?: string;
+          profilePictureUrl?: string;
+          followersCount?: number;
+          followsCount?: number;
+          mediaCount?: number;
+          posts?: Post[];
+        };
+        const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
+          const node = document.createElement(tag);
+          if (cls) node.className = cls;
+          if (text) node.textContent = text;
+          return node;
+        };
+        const SOUND_ICONS =
+          '<svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"/><path d="m17 9 5 6m0-6-5 6"/></svg>' +
+          '<svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg>';
+        // Иконки действий — постоянная разметка, только для вида
+        const ACTIONS =
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9-9.3C1.9 7.2 4 4.5 7 4.5c2 0 3.6 1.2 5 3 1.4-1.8 3-3 5-3 3 0 5.1 2.7 4 6.2-1.5 4.7-9 9.3-9 9.3Z"/></svg>' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 0 1-12.4 7.6L3.5 21l1.4-4.4A8.5 8.5 0 1 1 20.5 12Z"/></svg>' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 3 10 14.5M21.5 3 15 21l-5-6.5L3 9.5Z"/></svg>' +
+          '<svg class="save" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1Z"/></svg>';
+        // Значки в углу плитки, как в сетке Instagram
+        const BADGES: Record<string, string> = {
+          CAROUSEL_ALBUM:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5h9.5A1.5 1.5 0 0 1 20 6v9.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><rect x="4" y="8" width="12" height="12" rx="2" fill="#fff"/></svg>',
+          VIDEO:
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="#fff" stroke-width="2"/><path d="M3.5 8.5h17M9.5 3.5l2.5 5M15 3.5l2.5 5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M10.2 11.6v5.3l4.6-2.65Z" fill="#fff"/></svg>',
+        };
+        const lang = document.documentElement.lang;
+        const d = ig.dataset;
+        const localTest = location.hostname === 'localhost' && feedId.startsWith('/');
+        fetch(localTest ? feedId : `https://feeds.behold.so/${encodeURIComponent(feedId)}`)
+          .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+          .then((feed: Feed) => {
+            const posts = feed.posts ?? [];
+            if (!posts.length) return;
+
+            const head = el('div', 'ig__head');
+            if (feed.profilePictureUrl) {
+              const avatar = el('img', 'ig__avatar');
+              avatar.src = feed.profilePictureUrl;
+              avatar.alt = '';
+              head.append(avatar);
+            }
+            const stats = el('div', 'ig__stats');
+            const stat = (value: number | undefined, label = '') => {
+              if (value === undefined) return;
+              const box = el('span');
+              // как в Instagram: 10,4 тыс. вместо 10 400
+              const shown = value >= 10000 ? new Intl.NumberFormat(lang, { notation: 'compact', maximumFractionDigits: 1 }).format(value) : value.toLocaleString(lang);
+              box.append(el('strong', '', shown), el('small', '', label));
+              stats.append(box);
+            };
+            stat(feed.mediaCount ?? (d.postsCount ? Number(d.postsCount) : undefined), d.posts);
+            stat(feed.followersCount, d.followers);
+            stat(feed.followsCount, d.following);
+            const who = el('div', 'ig__who');
+            who.append(el('p', 'ig__name', feed.username ?? ''));
+            if (d.title) who.append(el('p', 'ig__title', d.title));
+            who.append(stats);
+            head.append(who);
+
+            const bio = el('p', 'ig__bio', feed.biography ?? '');
+            const open = el('a', 'ig__open', d.open);
+            open.href = d.profile ?? '#';
+            open.target = '_blank';
+            open.rel = 'noopener';
+
+            const mediaNode = (m: Media) => {
+              if (m.mediaType === 'VIDEO' && m.mediaUrl) {
+                // Как в Instagram: играет без звука и по кругу, нажатие — пауза, справа внизу звук
+                const box = el('div', 'ig__video');
+                const v = el('video');
+                v.src = m.mediaUrl;
+                const poster = m.sizes?.large?.mediaUrl || m.thumbnailUrl;
+                if (poster) v.poster = poster;
+                v.muted = true;
+                v.loop = true;
+                v.playsInline = true;
+                v.preload = 'metadata';
+                const sound = el('button', 'ig__sound');
+                sound.type = 'button';
+                sound.setAttribute('aria-label', 'Sound');
+                sound.innerHTML = SOUND_ICONS;
+                sound.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  v.muted = !v.muted;
+                  box.classList.toggle('is-unmuted', !v.muted);
+                });
+                box.addEventListener('click', () => (v.paused ? v.play() : v.pause()));
+                v.addEventListener('play', () => box.classList.add('is-playing'));
+                v.addEventListener('pause', () => box.classList.remove('is-playing'));
+                box.append(v, el('span', 'ig__play'), sound);
+                return box;
+              }
+              const img = el('img');
+              img.src = m.sizes?.large?.mediaUrl || m.mediaUrl || m.thumbnailUrl || '';
+              img.alt = m.altText ?? '';
+              return img;
+            };
+
+            // Пост открывается поверх ленты внутри телефона
+            const showPost = (post: Post) => {
+              const view = el('div', 'ig__view');
+              const bar = el('div', 'ig__view-bar');
+              const back = el('button', 'ig__back', '‹');
+              back.type = 'button';
+              back.setAttribute('aria-label', 'Back');
+              back.addEventListener('click', () => {
+                view.querySelectorAll('video').forEach((vid) => vid.pause());
+                view.remove();
+              });
+              bar.append(back);
+              if (feed.profilePictureUrl) {
+                const ava = el('img', 'ig__view-ava');
+                ava.src = feed.profilePictureUrl;
+                ava.alt = '';
+                bar.append(ava);
+              }
+              bar.append(el('strong', '', feed.username ?? ''), el('span', 'ig__more', '⋯'));
+
+              const items = post.mediaType === 'CAROUSEL_ALBUM' && post.children?.length ? post.children : [post];
+              const media = el('div', 'ig__media');
+              items.forEach((m) => {
+                const slide = el('div', 'ig__slide');
+                slide.append(mediaNode(m));
+                media.append(slide);
+              });
+              const wrap = el('div', 'ig__media-wrap');
+              wrap.append(media);
+              view.append(bar, wrap);
+
+              if (items.length > 1) {
+                const dots = el('div', 'ig__dots');
+                items.forEach((_, i) => dots.append(el('span', i === 0 ? 'is-active' : '')));
+                const current = () => Math.round(media.scrollLeft / media.clientWidth);
+                const go = (i: number) => media.scrollTo({ left: i * media.clientWidth, behavior: 'smooth' });
+                const prev = el('button', 'ig__nav ig__nav--prev', '‹');
+                const next = el('button', 'ig__nav ig__nav--next', '›');
+                prev.type = next.type = 'button';
+                prev.addEventListener('click', () => go(current() - 1));
+                next.addEventListener('click', () => go(current() + 1));
+                wrap.append(prev, next);
+                [...dots.children].forEach((dot, i) => dot.addEventListener('click', () => go(i)));
+
+                const sync = () => {
+                  const i = current();
+                  [...media.children].forEach((slide, j) => {
+                    const vid = slide.querySelector('video');
+                    if (!vid) return;
+                    if (i === j) vid.play().catch(() => {});
+                    else vid.pause();
+                  });
+                  [...dots.children].forEach((dot, j) => dot.classList.toggle('is-active', i === j));
+                  prev.hidden = i === 0;
+                  next.hidden = i === items.length - 1;
+                };
+                media.addEventListener('scroll', sync, { passive: true });
+                requestAnimationFrame(sync);
+
+                // Перетаскивание мышью, как свайп пальцем
+                let down = false;
+                let swallow = false;
+                let startX = 0;
+                let startLeft = 0;
+                media.addEventListener('dragstart', (e) => e.preventDefault());
+                media.addEventListener('pointerdown', (e) => {
+                  if (e.pointerType !== 'mouse' || e.button !== 0 || (e.target as HTMLElement).closest('.ig__sound')) return;
+                  down = true;
+                  startX = e.clientX;
+                  startLeft = media.scrollLeft;
+                  media.classList.add('is-dragging');
+                });
+                media.addEventListener('pointermove', (e) => {
+                  if (down) media.scrollLeft = startLeft - (e.clientX - startX);
+                });
+                const release = () => {
+                  if (!down) return;
+                  down = false;
+                  const moved = media.scrollLeft - startLeft;
+                  swallow = Math.abs(moved) > 5;
+                  const i = Math.round(startLeft / media.clientWidth) + (Math.abs(moved) > 40 ? Math.sign(moved) : 0);
+                  media.classList.remove('is-dragging');
+                  go(Math.max(0, Math.min(items.length - 1, i)));
+                };
+                media.addEventListener('pointerup', release);
+                media.addEventListener(
+                  'click',
+                  (e) => {
+                    if (!swallow) return;
+                    e.stopPropagation();
+                    swallow = false;
+                  },
+                  true,
+                );
+                media.addEventListener('pointerleave', release);
+
+                view.append(dots);
+              }
+
+              const actions = el('div', 'ig__actions');
+              actions.innerHTML = ACTIONS;
+              view.append(actions);
+              const num = (n: number) => n.toLocaleString(lang);
+              if (post.likeCount !== undefined)
+                view.append(el('p', 'ig__likes', (d.likes ?? '{n}').replace('{n}', num(post.likeCount))));
+
+              const text = post.prunedCaption || post.caption;
+              if (text) {
+                const caption = el('p', 'ig__caption');
+                caption.append(el('strong', '', `${feed.username ?? ''} `), text);
+                view.append(caption);
+              }
+              if (post.commentsCount) {
+                const comments = el('a', 'ig__comments', (d.comments ?? '{n}').replace('{n}', num(post.commentsCount)));
+                comments.href = post.permalink;
+                comments.target = '_blank';
+                comments.rel = 'noopener';
+                view.append(comments);
+              }
+              if (post.timestamp) {
+                const date = new Date(post.timestamp);
+                if (!Number.isNaN(date.getTime()))
+                  view.append(el('p', 'ig__date', date.toLocaleDateString(lang, { day: 'numeric', month: 'long' })));
+              }
+              const link = el('a', 'ig__open', d.open);
+              link.href = post.permalink;
+              link.target = '_blank';
+              link.rel = 'noopener';
+              view.append(link);
+
+              // окно поста кладём рядом с лентой, а не внутрь: так прокрутка ленты его не сдвигает
+              (ig.parentElement ?? ig).append(view);
+              if (items.length === 1) view.querySelector('video')?.play().catch(() => {});
+            };
+
+            const grid = el('div', 'ig__grid');
+            posts.forEach((post) => {
+              const link = el('a', `ig__post ig__post--${post.mediaType.toLowerCase()}`);
+              link.href = post.permalink;
+              link.target = '_blank';
+              link.rel = 'noopener';
+              const img = el('img');
+              img.src = post.sizes?.medium?.mediaUrl || post.thumbnailUrl || post.mediaUrl || '';
+              img.alt = post.altText ?? '';
+              img.loading = 'lazy';
+              link.append(img);
+              const badge = BADGES[post.mediaType];
+              if (badge) {
+                const mark = el('span', 'ig__badge');
+                mark.innerHTML = badge;
+                link.append(mark);
+              }
+              link.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPost(post);
+              });
+              grid.append(link);
+            });
+
+            const hl = document.querySelector<HTMLTemplateElement>('[data-ig-hl]')?.content.cloneNode(true);
+            ig.replaceChildren(head, bio, open, ...(hl ? [hl] : []), grid);
+
+            // Ленту можно тянуть мышью вверх-вниз; если тянули, клик по посту не срабатывает
+            let dragging = false;
+            let dragged = false;
+            let startY = 0;
+            let startTop = 0;
+            ig.addEventListener('dragstart', (e) => e.preventDefault());
+            ig.addEventListener('pointerdown', (e) => {
+              if (e.pointerType !== 'mouse' || e.button !== 0) return;
+              dragging = true;
+              dragged = false;
+              startY = e.clientY;
+              startTop = ig.scrollTop;
+            });
+            window.addEventListener('pointermove', (e) => {
+              if (!dragging) return;
+              const dy = e.clientY - startY;
+              if (!dragged && Math.abs(dy) > 5) {
+                dragged = true;
+                ig.classList.add('is-dragging');
+              }
+              if (dragged) ig.scrollTop = startTop - dy;
+            });
+            window.addEventListener('pointerup', () => {
+              dragging = false;
+              ig.classList.remove('is-dragging');
+            });
+            ig.addEventListener(
+              'click',
+              (e) => {
+                if (!dragged) return;
+                e.preventDefault();
+                e.stopPropagation();
+                dragged = false;
+              },
+              true,
+            );
+            ig.hidden = false;
+            ig.closest('.device')?.classList.add('has-feed');
+          })
+          .catch(() => {
+            // лента недоступна — остаётся скриншот
+          });
+      }
+
+      document.querySelectorAll<HTMLElement>('[data-slider]').forEach((slider) => {
+        const track = slider.querySelector<HTMLElement>('.slider__track');
+        const dots = slider.querySelectorAll<HTMLElement>('.dot');
+        if (!track) return;
+        slider.querySelectorAll<HTMLButtonElement>('[data-slide]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const count = track.children.length;
+            const current = Math.round(track.scrollLeft / track.clientWidth);
+            const next = (current + Number(btn.dataset.slide) + count) % count;
+            track.scrollTo({ left: next * track.clientWidth, behavior: 'smooth' });
+          });
+        });
+        track.addEventListener(
+          'scroll',
+          () => {
+            const current = Math.round(track.scrollLeft / track.clientWidth);
+            dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
+          },
+          { passive: true },
+        );
+      });
+
+      document.querySelectorAll<HTMLElement>('[data-player]').forEach((player) => {
+        const video = player.querySelector('video');
+        if (!video) return;
+        player.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
+        const fill = player.querySelector<HTMLElement>('.video__bar span');
+        video.addEventListener('timeupdate', () => {
+          if (fill && video.duration) fill.style.width = `${(video.currentTime / video.duration) * 100}%`;
+        });
+        video.addEventListener('play', () => {
+          player.classList.add('is-playing', 'is-started');
+        });
+        video.addEventListener('pause', () => player.classList.remove('is-playing'));
+        video.addEventListener('ended', () => {
+          player.classList.remove('is-playing', 'is-started');
+          video.currentTime = 0.1;
+        });
+      });
+    </script>
+  </body>
+</html>

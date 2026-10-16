@@ -1,0 +1,16 @@
+{
+  "name": "malaga-community",
+  "version": "1.0.0",
+  "description": "Лендинг Malaga Community: аренда недвижимости Malaga | Madrid",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --port 8770",
+    "build": "astro build",
+    "preview": "astro preview --port 8770"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.1.0",
+    "astro": "^5.18.2"
+  }
+}
