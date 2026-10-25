@@ -267,13 +267,14 @@ h3 {
 
 .nav__links {
   display: flex;
-  gap: 6px;
-  font-size: 16px;
+  gap: 2px;
+  font-size: clamp(14px, 1.1vw, 16px);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .nav__links a {
-  padding: 9px 16px;
+  padding: 9px clamp(8px, 0.9vw, 16px);
   border-radius: 999px;
   transition: background 0.2s;
 }
