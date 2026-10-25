@@ -9,13 +9,14 @@ export interface Listing {
   m2: number;
   beds?: number;
   desc: Record<Lang, string>;
+  photos?: string[]; // до 10 фото; если нет — берётся общая галерея типа
 }
 
-// Примеры для макета. Цены и описания условные — заменить реальными объектами.
-export const photos: Record<ListingType, string> = {
-  apartment: '/img/apartment.jpg',
-  house: '/img/house.jpg',
-  office: '/img/office.jpg',
+// Примеры для макета. Цены и описания условные — заменить реальными объектами (до 10 фото в каждом).
+export const gallery: Record<ListingType, string[]> = {
+  apartment: ['/img/apartment.jpg', '/img/hero.jpg', '/img/house.jpg'],
+  house: ['/img/house.jpg', '/img/hero.jpg', '/img/apartment.jpg'],
+  office: ['/img/office.jpg', '/img/apartment.jpg', '/img/hero.jpg'],
 };
 
 export const listings: Record<ListingType, Listing[]> = {
@@ -65,6 +66,33 @@ export const listings: Record<ListingType, Listing[]> = {
         en: 'Spacious flat with a concierge in a prime district.',
       },
     },
+    {
+      city: 'Málaga', area: 'Soho', price: 1250, m2: 60, beds: 1,
+      desc: {
+        ru: 'Квартира в арт-квартале рядом с центром и вокзалом.',
+        es: 'Piso en el barrio de arte, junto al centro y la estación.',
+        uk: 'Квартира в арт-кварталі поруч із центром і вокзалом.',
+        en: 'Flat in the arts district, close to the centre and the station.',
+      },
+    },
+    {
+      city: 'Madrid', area: 'Retiro', price: 2300, m2: 85, beds: 2,
+      desc: {
+        ru: 'Квартира с балконом в пяти минутах от парка Ретиро.',
+        es: 'Piso con balcón a cinco minutos del parque del Retiro.',
+        uk: 'Квартира з балконом за п’ять хвилин від парку Ретіро.',
+        en: 'Flat with a balcony five minutes from Retiro Park.',
+      },
+    },
+    {
+      city: 'Madrid', area: 'Lavapiés', price: 1500, m2: 50, beds: 1,
+      desc: {
+        ru: 'Уютная квартира в живом районе рядом с метро.',
+        es: 'Piso acogedor en un barrio con vida, junto al metro.',
+        uk: 'Затишна квартира в жвавому районі поруч із метро.',
+        en: 'Cosy flat in a lively area next to the metro.',
+      },
+    },
   ],
   house: [
     {
@@ -110,6 +138,24 @@ export const listings: Record<ListingType, Listing[]> = {
         es: 'Residencia con amplia parcela, piscina y seguridad.',
         uk: 'Резиденція з великою ділянкою, басейном та охороною.',
         en: 'Residence with a large plot, pool and security.',
+      },
+    },
+    {
+      city: 'Málaga', area: 'Churriana', price: 2600, m2: 140, beds: 3,
+      desc: {
+        ru: 'Дом с патио и барбекю в спокойном районе у аэропорта.',
+        es: 'Casa con patio y barbacoa en una zona tranquila cerca del aeropuerto.',
+        uk: 'Будинок із патіо та барбекю в спокійному районі біля аеропорту.',
+        en: 'House with a patio and barbecue in a quiet area near the airport.',
+      },
+    },
+    {
+      city: 'Madrid', area: 'Las Rozas', price: 4200, m2: 240, beds: 4,
+      desc: {
+        ru: 'Семейный дом с садом в пригороде, рядом школы и торговые центры.',
+        es: 'Casa familiar con jardín en las afueras, cerca de colegios y centros comerciales.',
+        uk: 'Сімейний будинок із садом у передмісті, поруч школи й торгові центри.',
+        en: 'Family house with a garden in the suburbs, near schools and shopping centres.',
       },
     },
   ],

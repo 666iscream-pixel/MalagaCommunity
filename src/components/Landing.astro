@@ -1,8 +1,8 @@
 ---
-import '@fontsource-variable/inter';
+import '@fontsource-variable/montserrat';
 import '../styles/global.css';
-import { ui, site, locales, langNames, path, type Lang } from '../i18n/ui';
-import { listings, photos, type ListingType } from '../data/listings';
+import { ui, site, locales, langNames, path, type Lang, url } from '../i18n/ui';
+import { listings, gallery, type ListingType } from '../data/listings';
 import { reviews } from '../data/reviews';
 
 interface Props {
@@ -16,34 +16,44 @@ const wa = (text: string) => `${site.whatsapp}?text=${encodeURIComponent(text)}`
 const tg = (text: string) => `${site.telegram}?text=${encodeURIComponent(text)}`;
 const tel = `tel:${site.phone.replace(/\s/g, '')}`;
 const year = new Date().getFullYear();
+// первое слово заголовка — бирюзовым, остальное — чёрным
+const head = (text: string) => {
+  const i = text.indexOf(' ');
+  return i < 0 ? [text, ''] : [text.slice(0, i), text.slice(i)];
+};
+// хайлайт «Отзывы» и id аккаунта — для прямых ссылок на сторис с отзывом
+const reviewsHighlight = 'https://www.instagram.com/stories/highlights/18041308036823034/';
+const igUserId = '62994530065';
+// блок «О нас» временно скрыт, пока нет фото команды и офиса; пункт меню ведёт к контактам
+const showAbout = false;
+const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`;
 ---
 
 <!doctype html>
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{t.meta.title}</title>
     <meta name="description" content={t.meta.description} />
-    <link rel="icon" type="image/png" href="/img/logo.png" />
+    <link rel="icon" type="image/png" href={url("/img/logo.png")} />
     {locales.map((l) => <link rel="alternate" hreflang={l} href={path(l)} />)}
     <meta property="og:title" content={t.meta.title} />
     <meta property="og:description" content={t.meta.description} />
-    <meta property="og:image" content="/img/hero.jpg" />
+    <meta property="og:image" content={url("/img/hero.jpg")} />
   </head>
   <body>
     <header class="nav">
       <div class="nav__inner">
-        <a class="logo" href={path(lang)} aria-label="Malaga Community">
-          <span class="logo__top">MALAGA</span>
-          <span class="logo__bottom"><em>C</em>OMMUNITY</span>
+        <a class="brand" href={path(lang)}>
+          <img src={url("/img/logo-full.png")} alt="Malaga Community" width="900" height="449" />
         </a>
         <nav class="nav__links">
           <a href="#search">{t.nav.search}</a>
           <a href="#process">{t.nav.process}</a>
           <a href="#social">{t.nav.social}</a>
           <a href="#reviews">{t.nav.reviews}</a>
-          <a href="#sale">{t.nav.sale}</a>
+          <a href={showAbout ? "#about" : "#contact"}>{t.nav.about}</a>
           <a href="#contact">{t.nav.contact}</a>
         </nav>
         <div class="nav__side">
@@ -63,8 +73,9 @@ const year = new Date().getFullYear();
 
     <main class="wrap stack">
       <section class="tile hero">
-        <img class="tile__bg" src="/img/hero.jpg" alt="" />
+        <img class="tile__bg" src={url("/img/hero.jpg")} alt="" />
         <div class="hero__text">
+          <p class="hero__slogan">{t.hero.slogan}</p>
           <h1>
             {t.hero.title}
             <span>{t.hero.cities}</span>
@@ -79,13 +90,9 @@ const year = new Date().getFullYear();
       </section>
 
       <section class="tile" id="search">
-        <div class="head">
-          <div>
-            <p class="eyebrow">{t.search.eyebrow}</p>
-            <h2>{t.search.title}</h2>
-            <p class="lead">{t.search.lead}</p>
-          </div>
-          <div class="tabs" role="tablist">
+        <div class="head head--stack">
+          <h2 class="title-xl"><span class="hl">{head(t.search.title)[0]}</span>{head(t.search.title)[1]}</h2>
+          <div class="tabs tabs--xl" role="tablist">
             {
               types.map((type, i) => (
                 <button
@@ -107,14 +114,18 @@ const year = new Date().getFullYear();
             <div class="rail" data-rail={type} hidden={i !== 0}>
               {listings[type].map((item) => {
                 const msg = `${t.search.message}: ${t.search.tabs[type].toLowerCase()}, ${item.area}, ${item.city}.`;
+                const pics = (item.photos ?? gallery[type]).slice(0, 10).map(url);
                 return (
                   <article class="card">
-                    <div class="card__photo">
-                      <img src={photos[type]} alt="" loading="lazy" />
-                      <span class="card__price">
-                        {t.search.from} {fmt(item.price)} {t.search.perMonth}
-                      </span>
-                    </div>
+                    <button class="card__photo" type="button" data-gallery={JSON.stringify(pics)} aria-label={`${item.area}: ${pics.length} ${t.search.photos}`}>
+                      <img src={pics[0]} alt="" loading="lazy" />
+                      {pics.length > 1 && (
+                        <span class="card__count">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4Z" /><circle cx="12" cy="13" r="3.4" /></svg>
+                          {pics.length}
+                        </span>
+                      )}
+                    </button>
                     <div class="card__body">
                       <p class="card__city">{item.city}</p>
                       <h3>{item.area}</h3>
@@ -122,6 +133,7 @@ const year = new Date().getFullYear();
                       <p class="card__specs">
                         {item.beds && <span>{t.search.beds}: {item.beds}</span>}
                         <span>{item.m2} m²</span>
+                        <span class="card__price">{t.search.from} {fmt(item.price)} {t.search.perMonth}</span>
                       </p>
                       <div class="card__actions">
                         <a class="btn btn--small" href={wa(msg)} target="_blank" rel="noopener">{t.search.whatsapp}</a>
@@ -131,6 +143,11 @@ const year = new Date().getFullYear();
                   </article>
                 );
               })}
+              <a class="card card--more" href={site.instagram} target="_blank" rel="noopener">
+                <span class="ig-link__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg></span>
+                <strong>{t.search.moreIg}</strong>
+                <span>Instagram ›</span>
+              </a>
             </div>
           ))
         }
@@ -138,15 +155,22 @@ const year = new Date().getFullYear();
           <button class="arrow arrow--prev" data-dir="-1" aria-label={t.search.prev}>‹</button>
           <button class="arrow arrow--next" data-dir="1" aria-label={t.search.next}>›</button>
         </div>
+
       </section>
 
       <section class="tile tile--tint" id="process">
         <div class="process">
           <div class="process__head">
             <p class="eyebrow">{t.process.eyebrow}</p>
-            <h2>{t.process.title}</h2>
+            <h2><span class="hl">{head(t.process.title)[0]}</span>{head(t.process.title)[1]}</h2>
             <p class="lead">{t.process.lead}</p>
-            <a class="btn" href={wa(t.contact.hello)} target="_blank" rel="noopener">{t.hero.primary}</a>
+            <div class="actions">
+              <a class="btn" href={wa(t.process.consultMsg)} target="_blank" rel="noopener">{t.process.consult}</a>
+              <a class="ig-link" href={site.instagram} target="_blank" rel="noopener">
+                <span class="ig-link__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg></span>
+                {t.process.moreIg} ›
+              </a>
+            </div>
           </div>
           <ol class="steps">
             {
@@ -165,38 +189,35 @@ const year = new Date().getFullYear();
       <section class="tile" id="social">
         <div class="head">
           <div>
-            <p class="eyebrow">{t.social.eyebrow}</p>
-            <h2>{t.social.title}</h2>
-            <p class="lead">{t.social.lead}</p>
+            <p class="lead lead--top">{t.social.lead}</p>
+            <h2><span class="hl">{head(t.social.title)[0]}</span>{head(t.social.title)[1]}</h2>
           </div>
-          <div class="nets">
-            <a class="net net--instagram" href={site.instagram} target="_blank" rel="noopener">
-              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg></span>
-              <strong>{t.social.links.instagram}</strong>
-              <small>{t.social.go} ›</small>
+          <div class="socials">
+            <a class="ig-cta" href={site.instagram} target="_blank" rel="noopener">
+              <span class="ig-cta__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg></span>
+              <span class="ig-cta__text">
+                <strong>Instagram</strong>
+                <small>{t.social.igLead}</small>
+              </span>
+              <span class="ig-cta__go" aria-hidden="true">›</span>
             </a>
-            <a class="net net--telegram" href={site.telegramChat} target="_blank" rel="noopener">
-              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2.2M21 4l-3 15-9-5.8M21 4 9 13.2V19l3.2-3.4"></path></svg></span>
-              <strong>{t.social.links.telegram}</strong>
-              <small>{t.social.go} ›</small>
-            </a>
-            <a class="net net--tiktok" href={site.tiktok} target="_blank" rel="noopener">
-              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.6a3.6 3.6 0 1 1-3.2-3.6"></path><path d="M14 4c.3 2.4 1.9 4 4.6 4.2"></path></svg></span>
-              <strong>{t.social.links.tiktok}</strong>
-              <small>{t.social.go} ›</small>
-            </a>
-            <a class="net net--facebook" href={site.facebook} target="_blank" rel="noopener">
-              <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.2h2.3V4.6h-2.7a3.6 3.6 0 0 0-3.6 3.6v2.5H7.8v3.5h2.4V20h3.7v-5.8h2.4l.5-3.5h-2.9V8.9c0-.4.3-.7.7-.7Z"></path></svg></span>
-              <strong>{t.social.links.facebook}</strong>
-              <small>{t.social.go} ›</small>
-            </a>
+            <div class="nets">
+              <a class="net net--tiktok" href={site.tiktok} target="_blank" rel="noopener">
+                <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.6a3.6 3.6 0 1 1-3.2-3.6"></path><path d="M14 4c.3 2.4 1.9 4 4.6 4.2"></path></svg></span>
+                {t.social.links.tiktok}
+              </a>
+              <a class="net net--facebook" href={site.facebook} target="_blank" rel="noopener">
+                <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.2h2.3V4.6h-2.7a3.6 3.6 0 0 0-3.6 3.6v2.5H7.8v3.5h2.4V20h3.7v-5.8h2.4l.5-3.5h-2.9V8.9c0-.4.3-.7.7-.7Z"></path></svg></span>
+                {t.social.links.facebook}
+              </a>
+            </div>
           </div>
         </div>
 
         <div class="stage">
           <div class="device">
             <a class="device__shot" href={site.instagram} target="_blank" rel="noopener" aria-label={t.social.open}>
-              <img src="/img/instagram.jpg" alt="Instagram @arenda_kvartir_malaga_madrid" loading="lazy" />
+              <img src={url("/img/instagram.jpg")} alt="Instagram @arenda_kvartir_malaga_madrid" loading="lazy" />
             </a>
             <div
               class="ig"
@@ -221,7 +242,7 @@ const year = new Date().getFullYear();
                       <span class="ig__hl-ring">
                         {
                           h.cover ? (
-                            <img src={h.cover} alt="" loading="lazy" />
+                            <img src={url(h.cover)} alt="" loading="lazy" />
                           ) : (
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                               {
@@ -244,7 +265,7 @@ const year = new Date().getFullYear();
           </div>
 
           <button class="clip" type="button" data-player aria-label={t.social.watch}>
-            <video src="/video/intro.mp4#t=0.1" playsinline preload="auto"></video>
+            <video src={url("/video/intro.mp4#t=0.1")} playsinline preload="auto"></video>
             <span class="video__play" aria-hidden="true"></span>
             <span class="video__bar" aria-hidden="true"><span></span></span>
           </button>
@@ -255,14 +276,21 @@ const year = new Date().getFullYear();
         <section class="tile">
           <p class="eyebrow">{t.reviews.eyebrow}</p>
           <div class="slider" data-slider>
+            {reviews.length > 1 && <button class="arrow slider__arrow slider__arrow--prev" data-slide="-1" aria-label={t.search.prev}>‹</button>}
             <div class="slider__track">
               {
                 reviews.map((r) => (
                   <figure class="quote">
                     <blockquote>{r.quote[lang]}</blockquote>
                     <figcaption>
-                      {r.avatar && <img src={r.avatar} alt="" width="56" height="56" loading="lazy" />}
-                      {r.author[lang]}
+                      {r.avatar ? <img src={url(r.avatar)} alt="" width="88" height="88" loading="lazy" /> : <span class="quote__initial" aria-hidden="true">{r.author[lang].charAt(0)}</span>}
+                      <span class="quote__who">
+                        {r.author[lang]}
+                        <a class="quote__src" href={`${reviewsHighlight}?story_media_id=${r.story}_${igUserId}`} target="_blank" rel="noopener">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg>
+                          {t.reviews.source}
+                        </a>
+                      </span>
                     </figcaption>
                   </figure>
                 ))
@@ -270,44 +298,79 @@ const year = new Date().getFullYear();
             </div>
             {
               reviews.length > 1 && (
+                <button class="arrow slider__arrow slider__arrow--next" data-slide="1" aria-label={t.search.next}>›</button>
                 <div class="slider__nav">
                   <div class="dots">
                     {reviews.map((_, i) => <span class:list={['dot', { 'is-active': i === 0 }]} />)}
-                  </div>
-                  <div class="arrows">
-                    <button class="arrow" data-slide="-1" aria-label={t.search.prev}>‹</button>
-                    <button class="arrow" data-slide="1" aria-label={t.search.next}>›</button>
                   </div>
                 </div>
               )
             }
           </div>
         </section>
-        <a class="tile tile--accent more" href={site.reviews} target="_blank" rel="noopener">
-          <span class="more__icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
-                <circle cx="12" cy="12" r="4.2"></circle>
-                <circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle>
-              </svg>
-          </span>
+        <div class="tile tile--accent more">
           <h3>{t.reviews.moreTitle}</h3>
           <p>{t.reviews.moreText}</p>
-          <span class="more__btn">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
-                <circle cx="12" cy="12" r="4.2"></circle>
-                <circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle>
-              </svg>
-            {t.reviews.more}
-          </span>
-        </a>
+          <div class="more__links">
+            <a class="more__btn" href={site.reviews} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg>
+              Instagram
+            </a>
+            <a class="more__btn" href={site.googleMaps} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>
+              Google Maps
+            </a>
+            <a class="more__btn" href={site.telegramChat} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2.2M21 4l-3 15-9-5.8M21 4 9 13.2V19l3.2-3.4"></path></svg>
+              {t.reviews.telegramGroup}
+            </a>
+          </div>
+        </div>
       </div>
+
+      {showAbout && (<section class="tile" id="about">
+        <div class="about">
+          <div class="about__text">
+            <p class="eyebrow">{t.about.eyebrow}</p>
+            <h2><span class="hl">{head(t.about.title)[0]}</span>{head(t.about.title)[1]}</h2>
+            <p class="lead">{t.about.text}</p>
+            <ul class="about__facts">
+              {
+                t.about.facts.map((f) => (
+                  <li>
+                    <strong>{f.value}</strong>
+                    <span>{f.label}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div class="about__office">
+            <div class="about__photo is-empty">{t.about.officePhoto}</div>
+            <p class="about__office-title">{t.about.officeTitle}</p>
+            <p>{site.address}</p>
+            <a class="link" href={mapUrl} target="_blank" rel="noopener">{t.about.map}</a>
+          </div>
+        </div>
+
+        <h3 class="about__team-title">{t.about.teamTitle}</h3>
+        <div class="team">
+          {
+            [1, 2, 3].map(() => (
+              <div class="member is-empty">
+                <span class="member__photo" />
+                <strong>{t.about.memberName}</strong>
+                <small>{t.about.memberRole}</small>
+              </div>
+            ))
+          }
+        </div>
+      </section>)}
 
       <div class="duo" id="contact">
         <section class="tile panel">
           <p class="eyebrow">{t.contact.eyebrow}</p>
-          <h2>{t.contact.title}</h2>
+          <h2><span class="hl">{head(t.contact.title)[0]}</span>{head(t.contact.title)[1]}</h2>
           <p class="lead">{t.contact.lead}</p>
           <ul class="ways">
             <li>
@@ -337,9 +400,9 @@ const year = new Date().getFullYear();
           </ul>
         </section>
         <section class="tile tile--photo panel" id="sale">
-          <img class="tile__bg" src="/img/house.jpg" alt="" loading="lazy" />
+          <img class="tile__bg" src={url("/img/house.jpg")} alt="" loading="lazy" />
           <p class="eyebrow">{t.sale.eyebrow}</p>
-          <h2>{t.sale.title}</h2>
+          <h2><span class="hl">{head(t.sale.title)[0]}</span>{head(t.sale.title)[1]}</h2>
           <p class="lead">{t.sale.text}</p>
           <span class="btn btn--ghost" aria-disabled="true">{t.sale.button}</span>
         </section>
@@ -348,15 +411,26 @@ const year = new Date().getFullYear();
 
     <footer class="footer">
       <div class="wrap footer__inner">
-        <a class="logo logo--big" href={path(lang)} aria-label="Malaga Community">
-          <span class="logo__top">MALAGA</span>
-          <span class="logo__bottom"><em>C</em>OMMUNITY</span>
+        <a class="brand brand--footer" href={path(lang)}>
+          <img src={url("/img/logo-full.png")} alt="Malaga Community" width="900" height="449" loading="lazy" />
         </a>
         <nav class="footer__links">
-          <a href={site.instagram} target="_blank" rel="noopener">{t.social.links.instagram}</a>
-          <a href={site.telegramChat} target="_blank" rel="noopener">{t.social.links.telegram}</a>
-          <a href={site.tiktok} target="_blank" rel="noopener">{t.social.links.tiktok}</a>
-          <a href={site.facebook} target="_blank" rel="noopener">{t.social.links.facebook}</a>
+          <a class="net--instagram" href={site.instagram} target="_blank" rel="noopener">
+            <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg></span>
+            {t.social.links.instagram}
+          </a>
+          <a class="net--telegram" href={site.telegramChat} target="_blank" rel="noopener">
+            <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2.2M21 4l-3 15-9-5.8M21 4 9 13.2V19l3.2-3.4"></path></svg></span>
+            {t.social.links.telegram}
+          </a>
+          <a class="net--tiktok" href={site.tiktok} target="_blank" rel="noopener">
+            <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.6a3.6 3.6 0 1 1-3.2-3.6"></path><path d="M14 4c.3 2.4 1.9 4 4.6 4.2"></path></svg></span>
+            {t.social.links.tiktok}
+          </a>
+          <a class="net--facebook" href={site.facebook} target="_blank" rel="noopener">
+            <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.2h2.3V4.6h-2.7a3.6 3.6 0 0 0-3.6 3.6v2.5H7.8v3.5h2.4V20h3.7v-5.8h2.4l.5-3.5h-2.9V8.9c0-.4.3-.7.7-.7Z"></path></svg></span>
+            {t.social.links.facebook}
+          </a>
         </nav>
         <p class="footer__meta">
           {site.address} · <a href={tel}>{site.phone}</a><br />
@@ -364,6 +438,30 @@ const year = new Date().getFullYear();
         </p>
       </div>
     </footer>
+
+    <nav class="sticky-cta" aria-label={t.nav.contact}>
+      <a class="sticky-cta__call" href={tel}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"></path></svg>
+        <span>{t.contact.call}</span>
+      </a>
+      <a class="sticky-cta__write" href={wa(t.contact.hello)} target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12Z"></path></svg>
+        <span class="on-desktop">{t.nav.cta}</span>
+        <span class="on-mobile">WhatsApp</span>
+      </a>
+      <a class="sticky-cta__contact" href="#contact">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="m4 7 8 6 8-6"></path></svg>
+        <span>{t.nav.contact}</span>
+      </a>
+    </nav>
+
+    <div class="lightbox" data-lightbox hidden>
+      <div class="lightbox__track" data-lb-track></div>
+      <button class="lightbox__close" type="button" data-lb-close aria-label={t.common.close}>×</button>
+      <button class="lightbox__nav lightbox__nav--prev" type="button" data-lb-dir="-1" aria-label={t.search.prev}>‹</button>
+      <button class="lightbox__nav lightbox__nav--next" type="button" data-lb-dir="1" aria-label={t.search.next}>›</button>
+      <p class="lightbox__count" data-lb-count></p>
+    </div>
 
     <script>
       const tabs = document.querySelectorAll<HTMLButtonElement>('[data-tab]');
@@ -455,6 +553,61 @@ const year = new Date().getFullYear();
 
       window.addEventListener('resize', updateArrows);
       updateArrows();
+
+      // Галерея объекта: до 10 фото, листается стрелками, свайпом и клавишами
+      const lb = document.querySelector<HTMLElement>('[data-lightbox]');
+      const lbTrack = lb?.querySelector<HTMLElement>('[data-lb-track]');
+      const lbCount = lb?.querySelector<HTMLElement>('[data-lb-count]');
+      const lbPrev = lb?.querySelector<HTMLButtonElement>('[data-lb-dir="-1"]');
+      const lbNext = lb?.querySelector<HTMLButtonElement>('[data-lb-dir="1"]');
+      if (lb && lbTrack && lbCount && lbPrev && lbNext) {
+        const index = () => Math.round(lbTrack.scrollLeft / (lbTrack.clientWidth || 1));
+        const syncLb = () => {
+          const total = lbTrack.children.length;
+          const i = index();
+          lbCount.textContent = `${i + 1} / ${total}`;
+          lbPrev.hidden = i <= 0;
+          lbNext.hidden = i >= total - 1;
+        };
+        const goLb = (i: number) => lbTrack.scrollTo({ left: i * lbTrack.clientWidth, behavior: 'smooth' });
+        const closeLb = () => {
+          lb.hidden = true;
+          document.documentElement.classList.remove('is-locked');
+        };
+        document.querySelectorAll<HTMLButtonElement>('[data-gallery]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const pics: string[] = JSON.parse(btn.dataset.gallery || '[]');
+            lbTrack.replaceChildren(
+              ...pics.map((src) => {
+                const slide = document.createElement('div');
+                slide.className = 'lightbox__slide';
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = '';
+                slide.append(img);
+                return slide;
+              }),
+            );
+            lb.hidden = false;
+            document.documentElement.classList.add('is-locked');
+            lbTrack.scrollLeft = 0;
+            requestAnimationFrame(syncLb);
+          });
+        });
+        lbTrack.addEventListener('scroll', syncLb, { passive: true });
+        lbPrev.addEventListener('click', () => goLb(index() - 1));
+        lbNext.addEventListener('click', () => goLb(index() + 1));
+        lb.querySelector('[data-lb-close]')?.addEventListener('click', closeLb);
+        lb.addEventListener('click', (e) => {
+          if (e.target === lb || (e.target as HTMLElement).classList.contains('lightbox__slide')) closeLb();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (lb.hidden) return;
+          if (e.key === 'Escape') closeLb();
+          if (e.key === 'ArrowRight') goLb(index() + 1);
+          if (e.key === 'ArrowLeft') goLb(index() - 1);
+        });
+      }
 
       // Лента Instagram из Behold: только на компьютере, на телефоне остаётся переход в Instagram
       const ig = document.querySelector<HTMLElement>('[data-ig]');
@@ -808,6 +961,52 @@ const year = new Date().getFullYear();
           { passive: true },
         );
       });
+
+      // плавающие кнопки на компьютере: прячем у блока контактов и над кнопками сайта
+      const cta = document.querySelector<HTMLElement>('.sticky-cta');
+      const desktop = window.matchMedia('(min-width: 721px)');
+      if (cta) {
+        const contact = document.querySelector('#contact');
+        let nearContact = false;
+        let ticking = false;
+        const coversControl = () => {
+          const r = cta.getBoundingClientRect();
+          const pad = 12;
+          const xs = [r.left - pad, r.left + r.width / 2, r.right + pad];
+          const ys = [r.top - pad, r.top + r.height / 2, r.bottom + pad];
+          return xs.some((x) =>
+            ys.some((y) =>
+              document.elementsFromPoint(x, y).some((el) => {
+                if (cta.contains(el)) return false;
+                const control = el.closest('a, button, input, textarea, select, [role="tab"]');
+                // крупные кликабельные области (фото карточек) не считаем — под ними кнопки не прячем
+                return !!control && control.getBoundingClientRect().height < 120;
+              }),
+            ),
+          );
+        };
+        const update = () => {
+          ticking = false;
+          const hide = desktop.matches && (nearContact || coversControl());
+          cta.classList.toggle('is-hidden', hide);
+        };
+        const schedule = () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        };
+        if (contact) {
+          new IntersectionObserver(([entry]) => {
+            nearContact = entry.isIntersecting;
+            schedule();
+          }).observe(contact);
+        }
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule);
+        document.addEventListener('scroll', schedule, { passive: true, capture: true });
+        schedule();
+      }
 
       document.querySelectorAll<HTMLElement>('[data-player]').forEach((player) => {
         const video = player.querySelector('video');

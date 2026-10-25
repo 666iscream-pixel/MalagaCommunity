@@ -3,14 +3,17 @@ import type { Lang } from '../i18n/ui';
 export interface Review {
   author: Record<Lang, string>;
   avatar?: string;
+  // id сторис в хайлайте «Отзывы» — ссылка ведёт прямо на неё
+  story: string;
   quote: Record<Lang, string>;
 }
 
-// Только настоящие отзывы клиентов (PDF-макет и раздел «Отзывы» в Instagram).
-// Язык оригинала: первый и второй — русский, третий — украинский; остальное — перевод.
+// Настоящие отзывы клиентов из хайлайта «Отзывы» в Instagram; аватары вырезаны из этих же сторис.
+// Оригиналы на русском, остальные языки — перевод.
 export const reviews: Review[] = [
   {
     author: { ru: 'Дмитрий и Полина', es: 'Dmitri y Polina', uk: 'Дмитро і Поліна', en: 'Dmitry and Polina' },
+    story: '3854784239657319873',
     avatar: '/img/review-1-avatar.jpg',
     quote: {
       ru: 'Выражаем с мужем огромную благодарность компании Malaga Community! Несмотря на то, что мы проживали в другом городе, нам смогли быстро подобрать подходящие варианты и организовать просмотры. Весь процесс от и до занял 2–3 недели. Мы ни о чём не переживали: люди в компании очень ответственны, доброжелательны и готовы поддержать на каждом этапе.',
@@ -21,6 +24,8 @@ export const reviews: Review[] = [
   },
   {
     author: { ru: 'Ольга', es: 'Olga', uk: 'Ольга', en: 'Olga' },
+    avatar: '/img/review-olga.png',
+    story: '3352193441317669300',
     quote: {
       ru: 'Ребята, кому нужна помощь в поиске жилья, можете смело обращаться к Александру. Подскажет, покажет, поможет с поиском, всё подробно объяснит. Нам квартиру нашёл за неделю, мы квартирой довольны. На каждую квартиру Александр ездил с нами и не пытался приукрасить тот или иной вариант. Оценивал как для себя. От нас большое спасибо за помощь!',
       es: 'Si alguien necesita ayuda para encontrar vivienda, puede acudir a Alexander con total confianza. Orienta, enseña, ayuda con la búsqueda y lo explica todo con detalle. A nosotros nos encontró piso en una semana y estamos contentos con él. Alexander nos acompañó a cada visita y no intentó adornar ninguna opción. Valoraba cada piso como si fuera para él. ¡Muchas gracias por la ayuda!',
@@ -29,16 +34,20 @@ export const reviews: Review[] = [
     },
   },
   {
-    author: { ru: 'Максим', es: 'Maksym', uk: 'Максим', en: 'Maksym' },
+    author: { ru: 'Марина и Павел', es: 'Marina y Pável', uk: 'Марина і Павло', en: 'Marina and Pavel' },
+    avatar: '/img/review-marina-pavel.png',
+    story: '3835892850416694480',
     quote: {
-      ru: 'Хочу оставить отзыв о работе Александра, который помогает с поиском квартир. Всё было отлично, каждый день я получал по несколько вариантов квартир для просмотра. Вас будут сопровождать вплоть до подписания контракта. Общение с владельцами квартир и проверку контракта Александр берёт на себя, поэтому, если вы не знаете испанский, проблем с этим не будет. В целом очень доволен конечным результатом.',
-      es: 'Quiero dejar una opinión sobre el trabajo de Alexander, que ayuda a buscar piso. Todo fue estupendo: cada día recibía varias opciones para visitar. Le acompañan hasta el momento de firmar el contrato. Alexander se encarga de la comunicación con los propietarios y de revisar el contrato, así que no hay problema si no habla español. En general, estoy muy satisfecho con el resultado final.',
-      uk: 'Хочу залишити відгук стосовно роботи Олександра, який допомагає з пошуком квартир. Все було чудово, кожного дня я отримував по декілька варіантів квартир для перегляду. Вас будуть супроводжувати аж до моменту підписання контракту. Комунікацію з власниками квартир, а також перевірку контракту Олександр бере на себе, тому якщо ви не знаєте іспанську, з цим проблем не буде. Загалом дуже задоволений кінцевим результатом.',
-      en: 'I want to leave a review of the work of Alexander, who helps people find flats. Everything was great: every day I received several flats to view. You are supported right up to signing the contract. Alexander handles communication with the owners and checks the contract himself, so it is no problem if you do not speak Spanish. Overall I am very happy with the final result.',
+      ru: 'Хочу выразить огромную благодарность ребятам из Malaga Community за профессиональную помощь в аренде жилья и поддержку 24/7 — даже по вопросам, которые вас в принципе не касались, но вы всё равно помогали. Большое человеческое спасибо! Квартира, которую вы нашли, просто огонь, и район тоже супер — я очень довольна.',
+      es: 'Quiero dar las gracias de corazón al equipo de Malaga Community por su ayuda profesional con el alquiler y su apoyo 24/7, incluso en temas que en principio no les correspondían, y aun así nos ayudaron. ¡Un enorme gracias de verdad! El piso que nos encontraron es una maravilla y el barrio también es genial: estoy encantada.',
+      uk: 'Хочу висловити величезну подяку команді Malaga Community за професійну допомогу з орендою житла й підтримку 24/7 — навіть у питаннях, які вас загалом не стосувалися, але ви все одно допомагали. Щире людське спасибі! Квартира, яку ви знайшли, просто вогонь, і район теж чудовий — я дуже задоволена.',
+      en: 'A huge thank you to the Malaga Community team for their professional help with renting and their 24/7 support, even with things that were not really their job, yet they still helped. A big, heartfelt thank you! The flat you found us is amazing and the neighbourhood is great too. I am really happy.',
     },
   },
   {
     author: { ru: 'Татьяна', es: 'Tatiana', uk: 'Тетяна', en: 'Tatiana' },
+    avatar: '/img/review-tatiana.png',
+    story: '3239752104996473109',
     quote: {
       ru: 'Хочу выразить огромную благодарность Александру и его команде за помощь в поиске квартиры в Малаге. Всё было очень быстро и профессионально: идеальную квартиру нашли за две недели, помогли с подготовкой документов и оформлением договора. Отдельная благодарность за помощь с переездом из временной квартиры.',
       es: 'Quiero dar las gracias de corazón a Alexander y a su equipo por ayudarnos a buscar piso en Málaga. Todo fue muy rápido y profesional: encontraron el piso ideal en dos semanas y nos ayudaron a preparar la documentación y a formalizar el contrato. Un agradecimiento aparte por la ayuda con la mudanza desde el piso temporal.',
@@ -48,6 +57,8 @@ export const reviews: Review[] = [
   },
   {
     author: { ru: 'Ирина', es: 'Iryna', uk: 'Ірина', en: 'Iryna' },
+    avatar: '/img/review-iryna.png',
+    story: '3352196849625800082',
     quote: {
       ru: 'Очень благодарна Александру за помощь в поиске аренды квартиры. За неделю был найден отличный вариант, подходящий по цене и месту расположения. Помощь с переводом и общением с владельцами квартир бесценна. Все договорённости выполнены. Рекомендую!',
       es: 'Estoy muy agradecida a Alexander por su ayuda en la búsqueda de un piso de alquiler. En una semana encontró una opción excelente, adecuada por precio y ubicación. La ayuda con la traducción y la comunicación con los propietarios no tiene precio. Se cumplió todo lo acordado. ¡Lo recomiendo!',
@@ -57,6 +68,8 @@ export const reviews: Review[] = [
   },
   {
     author: { ru: 'Иван', es: 'Ivan', uk: 'Іван', en: 'Ivan' },
+    avatar: '/img/review-ivan.png',
+    story: '3352196937186194751',
     quote: {
       ru: 'Благодарю за колоссальную помощь в поиске жилья! Всё было очень быстро, профессионально и надёжно. Особенно вдохновляет отзывчивость на любой, даже пустяковый вопрос. Очень ценно, что ты переживаешь за наше жильё как за своё. Плюс отдельная благодарность за позитивные эмоции в этом непростом деле.',
       es: '¡Gracias por la enorme ayuda en la búsqueda de vivienda! Todo fue muy rápido, profesional y fiable. Me anima especialmente la disposición a responder cualquier pregunta, por pequeña que sea. Valoro mucho que te preocupes por nuestra vivienda como si fuera la tuya. Y gracias aparte por las emociones positivas en un asunto nada fácil.',
@@ -65,12 +78,14 @@ export const reviews: Review[] = [
     },
   },
   {
-    author: { ru: 'Ксения', es: 'Ksenia', uk: 'Ксенія', en: 'Ksenia' },
+    author: { ru: 'Ольга и Евгений', es: 'Olga y Yevgueni', uk: 'Ольга і Євген', en: 'Olga and Evgeniy' },
+    avatar: '/img/review-olga-evgeniy.png',
+    story: '3930808128325318052',
     quote: {
-      ru: 'Хочу выразить огромную благодарность Александру и его команде за помощь в поиске квартиры в Малаге. Ситуация у нас была непростая: искать нужно было дистанционно, и у нас не было испанской резиденции. Несмотря на это, квартиру нам нашли за две недели. После каждого просмотра Александр присылал подробнейший видеоотчёт. Потом ребята помогли оформить договор и избежать всех подводных камней.',
-      es: 'Quiero dar las gracias de corazón a Alexander y a su equipo por ayudarnos a buscar piso en Málaga. Nuestra situación no era fácil: teníamos que buscar a distancia y no teníamos residencia española. Aun así, nos encontraron piso en dos semanas. Después de cada visita, Alexander nos enviaba un informe en vídeo muy detallado. Luego nos ayudaron a formalizar el contrato y a evitar todos los escollos.',
-      uk: 'Хочу висловити величезну подяку Олександру та його команді за допомогу в пошуку квартири в Малазі. Ситуація в нас була непроста: шукати потрібно було дистанційно, і в нас не було іспанської резиденції. Попри це, квартиру нам знайшли за два тижні. Після кожного перегляду Олександр надсилав докладний відеозвіт. Потім допомогли оформити договір і уникнути всіх підводних каменів.',
-      en: 'A huge thank you to Alexander and his team for helping us find a flat in Málaga. Our situation was not simple: we had to search remotely and we had no Spanish residency. Even so, they found us a flat in two weeks. After every viewing Alexander sent a very detailed video report. Then they helped us finalise the contract and avoid all the pitfalls.',
+      ru: 'Хотим выразить огромную благодарность Александру и его команде за профессионализм, внимательное отношение и отличную работу! Благодаря им мы нашли именно ту квартиру в Малаге, о которой мечтали. На каждом этапе они были на связи, оперативно отвечали на все вопросы, помогали разобраться во всех нюансах и сопровождали нас до самого заселения. С уверенностью рекомендуем всем, кто ищет надёжного и ответственного риелтора.',
+      es: 'Queremos dar las gracias de corazón a Alexander y a su equipo por su profesionalidad, su atención y su gran trabajo. Gracias a ellos encontramos en Málaga justo el piso con el que soñábamos. Estuvieron disponibles en cada etapa, respondían rápido a todas las preguntas, nos ayudaron con todos los detalles y nos acompañaron hasta el día de la mudanza. Lo recomendamos con total confianza a quien busque un agente fiable y responsable.',
+      uk: 'Хочемо висловити величезну подяку Олександру та його команді за професіоналізм, уважне ставлення й чудову роботу! Завдяки їм ми знайшли в Малазі саме ту квартиру, про яку мріяли. На кожному етапі вони були на зв’язку, оперативно відповідали на всі питання, допомагали розібратися в усіх нюансах і супроводжували нас до самого заселення. Упевнено рекомендуємо всім, хто шукає надійного й відповідального рієлтора.',
+      en: 'We want to thank Alexander and his team for their professionalism, attentiveness and excellent work. Thanks to them we found exactly the flat in Málaga we had dreamed of. They were in touch at every stage, answered all our questions quickly, helped us understand every detail and supported us right up to moving in. We confidently recommend them to anyone looking for a reliable, responsible agent.',
     },
   },
 ];
