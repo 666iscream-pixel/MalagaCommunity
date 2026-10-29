@@ -24,9 +24,6 @@ const head = (text: string) => {
 // хайлайт «Отзывы» и id аккаунта — для прямых ссылок на сторис с отзывом
 const reviewsHighlight = 'https://www.instagram.com/stories/highlights/18041308036823034/';
 const igUserId = '62994530065';
-// блок «О нас» временно скрыт, пока нет фото команды и офиса; пункт меню ведёт к контактам
-const showAbout = false;
-const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`;
 ---
 
 <!doctype html>
@@ -53,7 +50,7 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
           <a href="#process">{t.nav.process}</a>
           <a href="#social">{t.nav.social}</a>
           <a href="#reviews">{t.nav.reviews}</a>
-          <a href={showAbout ? "#about" : "#contact"}>{t.nav.about}</a>
+          <a href="#about">{t.nav.about}</a>
           <a href="#contact">{t.nav.contact}</a>
         </nav>
         <div class="nav__side">
@@ -320,50 +317,40 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
         </div>
       </div>
 
-      {showAbout && (<section class="tile" id="about">
-        <div class="about">
-          <div class="about__text">
-            <p class="eyebrow">{t.about.eyebrow}</p>
-            <h2><span class="hl">{head(t.about.title)[0]}</span>{head(t.about.title)[1]}</h2>
-            <p class="lead">{t.about.text}</p>
-            <ul class="about__facts">
-              {
-                t.about.facts.map((f) => (
-                  <li>
-                    <strong>{f.value}</strong>
-                    <span>{f.label}</span>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-          <div class="about__office">
-            <div class="about__photo is-empty">{t.about.officePhoto}</div>
-            <p class="about__office-title">{t.about.officeTitle}</p>
-            <p>{site.address}</p>
-            <a class="link" href={mapUrl} target="_blank" rel="noopener">{t.about.map}</a>
-          </div>
-        </div>
+      <div class="duo duo--about" id="about">
+        <section class="tile about">
+          <p class="eyebrow">{t.about.eyebrow}</p>
+          <h2><span class="hl">{head(t.about.title)[0]}</span>{head(t.about.title)[1]}</h2>
+          <p class="lead about__lead">{t.about.lead}</p>
+          <ul class="about__points">
+            {t.about.points.map((point) => <li>{point}</li>)}
+          </ul>
+          <p class="about__closing">{t.about.closing}</p>
+          <ul class="badges">
+            {
+              t.about.badges.map((badge, i) => (
+                <li>{i === 1 ? <a href="#reviews">{badge}</a> : <span>{badge}</span>}</li>
+              ))
+            }
+          </ul>
+        </section>
+        <section class="tile map">
+          <iframe
+            src={`https://maps.google.com/maps?cid=3333495740030976029&output=embed&hl=${lang}`}
+            title={t.about.mapTitle}
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </section>
+      </div>
 
-        <h3 class="about__team-title">{t.about.teamTitle}</h3>
-        <div class="team">
-          {
-            [1, 2, 3].map(() => (
-              <div class="member is-empty">
-                <span class="member__photo" />
-                <strong>{t.about.memberName}</strong>
-                <small>{t.about.memberRole}</small>
-              </div>
-            ))
-          }
-        </div>
-      </section>)}
-
-      <div class="duo" id="contact">
-        <section class="tile panel">
-          <p class="eyebrow">{t.contact.eyebrow}</p>
-          <h2><span class="hl">{head(t.contact.title)[0]}</span>{head(t.contact.title)[1]}</h2>
-          <p class="lead">{t.contact.lead}</p>
+        <section class="tile contact" id="contact">
+          <div class="contact__head">
+            <p class="eyebrow">{t.contact.eyebrow}</p>
+            <h2><span class="hl">{head(t.contact.title)[0]}</span>{head(t.contact.title)[1]}</h2>
+            <p class="lead">{t.contact.lead}</p>
+          </div>
           <ul class="ways">
             <li>
               <a class="way" href={wa(t.contact.hello)} target="_blank" rel="noopener">
@@ -391,14 +378,6 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
             </li>
           </ul>
         </section>
-        <section class="tile tile--photo panel" id="sale">
-          <img class="tile__bg" src={url("/img/house.jpg")} alt="" loading="lazy" />
-          <p class="eyebrow">{t.sale.eyebrow}</p>
-          <h2><span class="hl">{head(t.sale.title)[0]}</span>{head(t.sale.title)[1]}</h2>
-          <p class="lead">{t.sale.text}</p>
-          <span class="btn btn--ghost" aria-disabled="true">{t.sale.button}</span>
-        </section>
-      </div>
     </main>
 
     <footer class="footer">
