@@ -30,7 +30,7 @@ export const site = {
   googleMaps: 'https://maps.google.com/?cid=3333495740030976029',
   // карточка в Google Maps сразу на вкладке «Отзывы»
   googleReviews:
-    'https://www.google.com/maps/place/MALAGA+COMMUNITY/@36.7136472,-4.4324664,17z/data=!4m8!3m7!1s0xd72f724378b3d89:0x2e42f4b6c4d3001d!8m2!3d36.7136472!4d-4.4324664!9m1!1b1',
+    'https://www.google.com/maps/place/MALAGA+COMMUNITY/@36.7136515,-4.435036,17z/data=!3m1!5s0xd72f75f39fddc63:0x6406f20421786547!4m8!3m7!1s0xd72f724378b3d89:0x2e42f4b6c4d3001d!8m2!3d36.7136472!4d-4.4324664!9m1!1b1!16s%2Fg%2F11wh6xyy73?entry=ttu&g_ep=EgoyMDI2MTAyMC4wIKXMDSoASAFQAw%3D%3D',
   tiktok: 'https://www.tiktok.com/@arenda_malaga_madrid',
   facebook: 'https://www.facebook.com/arenda.kvartir.malaga.provincia/',
   address: 'Pl. de la Solidaridad, 12, 5ª planta, 29006 Málaga',
@@ -75,7 +75,6 @@ export const ui = {
       lead: 'В среднем поиски аренды занимают от одной до четырёх недель.',
       consult: 'Консультация с менеджером',
       consultMsg: 'Здравствуйте! Хочу получить консультацию по аренде.',
-      moreIg: 'Подробнее в Instagram',
       steps: [
         { title: 'Профиль и документы', text: 'Собираем и правильно подготавливаем профиль для презентации и документы, подтверждающие ваши доходы.' },
         { title: 'Подбор и просмотры', text: 'Формируем таблицу с ежедневными вариантами объектов под ваш запрос, уточняем, какие вас заинтересовали, прозваниваем их и договариваемся о просмотрах.' },
@@ -186,7 +185,6 @@ export const ui = {
       lead: 'De media, la búsqueda de alquiler dura de una a cuatro semanas.',
       consult: 'Consulta con un asesor',
       consultMsg: '¡Hola! Quiero una consulta sobre el alquiler.',
-      moreIg: 'Más información en Instagram',
       steps: [
         { title: 'Perfil y documentación', text: 'Reunimos y preparamos correctamente su perfil para la presentación y los documentos que acreditan sus ingresos.' },
         { title: 'Selección y visitas', text: 'Elaboramos una tabla con opciones diarias según su solicitud, vemos cuáles le interesan, llamamos y concertamos las visitas.' },
@@ -297,7 +295,6 @@ export const ui = {
       lead: 'У середньому пошук оренди триває від одного до чотирьох тижнів.',
       consult: 'Консультація з менеджером',
       consultMsg: 'Добрий день! Хочу отримати консультацію щодо оренди.',
-      moreIg: 'Детальніше в Instagram',
       steps: [
         { title: 'Профіль і документи', text: 'Збираємо і правильно готуємо профіль для презентації та документи, що підтверджують ваші доходи.' },
         { title: 'Підбір і перегляди', text: 'Формуємо таблицю зі щоденними варіантами під ваш запит, уточнюємо, які вас зацікавили, обдзвонюємо їх і домовляємося про перегляди.' },
@@ -408,7 +405,6 @@ export const ui = {
       lead: 'On average, a rental search takes one to four weeks.',
       consult: 'Talk to a consultant',
       consultMsg: 'Hello! I would like a consultation about renting.',
-      moreIg: 'More on Instagram',
       steps: [
         { title: 'Profile and paperwork', text: 'We put together your profile and the documents proving your income, prepared properly for the landlord.' },
         { title: 'Shortlist and viewings', text: 'We build a daily table of options that match your search, check which ones interest you, call the owners and arrange viewings.' },
