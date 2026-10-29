@@ -1573,8 +1573,8 @@ h3 {
 
 .about__points {
   display: grid;
-  gap: 14px;
-  margin: 24px 0 0;
+  gap: 10px;
+  margin: 20px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -1596,7 +1596,7 @@ h3 {
 }
 
 .about__closing {
-  margin-top: 22px;
+  margin-top: 18px;
   font-weight: 600;
 }
 
@@ -1604,7 +1604,7 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 24px 0 0;
+  margin: 20px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -1642,7 +1642,10 @@ h3 {
 
 /* Карта офиса */
 .map {
-  min-height: 460px;
+  position: sticky;
+  top: 124px;
+  align-self: start;
+  height: clamp(320px, calc(100svh - 160px), 520px);
   padding: 0;
 }
 
@@ -2259,11 +2262,18 @@ html.is-locked {
   .contact {
     grid-template-columns: 1fr;
   }
+
+  .map {
+    position: relative;
+    top: auto;
+  }
 }
 
 @media (max-width: 720px) {
   .map {
-    min-height: 380px;
+    position: relative;
+    top: auto;
+    height: 380px;
   }
 
   /* «недвижимости» должно влезать в ширину телефона */
