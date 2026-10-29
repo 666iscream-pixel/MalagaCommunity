@@ -954,51 +954,7 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
         );
       });
 
-      // плавающие кнопки на компьютере: прячем у блока контактов и над кнопками сайта
-      const cta = document.querySelector<HTMLElement>('.sticky-cta');
       const desktop = window.matchMedia('(min-width: 721px)');
-      if (cta) {
-        const contact = document.querySelector('#contact');
-        let nearContact = false;
-        let ticking = false;
-        const coversControl = () => {
-          const r = cta.getBoundingClientRect();
-          const pad = 12;
-          const xs = [r.left - pad, r.left + r.width / 2, r.right + pad];
-          const ys = [r.top - pad, r.top + r.height / 2, r.bottom + pad];
-          return xs.some((x) =>
-            ys.some((y) =>
-              document.elementsFromPoint(x, y).some((el) => {
-                if (cta.contains(el)) return false;
-                const control = el.closest('a, button, input, textarea, select, [role="tab"]');
-                // крупные кликабельные области (фото карточек) не считаем — под ними кнопки не прячем
-                return !!control && control.getBoundingClientRect().height < 120;
-              }),
-            ),
-          );
-        };
-        const update = () => {
-          ticking = false;
-          const hide = desktop.matches && (nearContact || coversControl());
-          cta.classList.toggle('is-hidden', hide);
-        };
-        const schedule = () => {
-          if (!ticking) {
-            ticking = true;
-            requestAnimationFrame(update);
-          }
-        };
-        if (contact) {
-          new IntersectionObserver(([entry]) => {
-            nearContact = entry.isIntersecting;
-            schedule();
-          }).observe(contact);
-        }
-        window.addEventListener('scroll', schedule, { passive: true });
-        window.addEventListener('resize', schedule);
-        document.addEventListener('scroll', schedule, { passive: true, capture: true });
-        schedule();
-      }
 
       document.querySelectorAll<HTMLElement>('[data-player]').forEach((player) => {
         const video = player.querySelector('video');

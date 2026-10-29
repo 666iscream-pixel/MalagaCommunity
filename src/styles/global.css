@@ -1975,15 +1975,6 @@ h3 {
   z-index: 20;
   display: flex;
   gap: 8px;
-  transition:
-    opacity 0.25s,
-    transform 0.25s;
-}
-
-.sticky-cta.is-hidden {
-  opacity: 0;
-  transform: translateY(16px);
-  pointer-events: none;
 }
 
 .sticky-cta a {
