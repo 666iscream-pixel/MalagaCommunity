@@ -28,7 +28,10 @@ export const site = {
   reviews: 'https://www.instagram.com/arenda_kvartir_malaga_madrid/',
   telegramChat: 'https://t.me/malaga_community',
   googleMaps: 'https://maps.google.com/?cid=3333495740030976029',
-  tiktok: 'https://www.tiktok.com/@malaga.community',
+  // карточка в Google Maps сразу на вкладке «Отзывы»
+  googleReviews:
+    'https://www.google.com/maps/place/MALAGA+COMMUNITY/@36.7136472,-4.4324664,17z/data=!4m8!3m7!1s0xd72f724378b3d89:0x2e42f4b6c4d3001d!8m2!3d36.7136472!4d-4.4324664!9m1!1b1',
+  tiktok: 'https://www.tiktok.com/@arenda_malaga_madrid',
   facebook: 'https://www.facebook.com/arenda.kvartir.malaga.provincia/',
   address: 'Pl. de la Solidaridad, 12, 5ª planta, 29006 Málaga',
 };
@@ -40,7 +43,7 @@ export const ui = {
       description:
         'Поиск аренды жилья в Малаге и Мадриде под ключ: документы, подбор вариантов, переговоры с собственниками и проверка контракта. Более 400 подписанных контрактов.',
     },
-    nav: { search: 'Что ищем', process: 'Как мы работаем', social: 'Соцсети', reviews: 'Отзывы', about: 'О нас', contact: 'Контакты', cta: 'Написать' },
+    nav: { search: 'Что ищем?', process: 'Как мы работаем', social: 'Соцсети', reviews: 'Отзывы', about: 'О нас', contact: 'Контакты', cta: 'Написать' },
     hero: {
       slogan: 'Жить в Испании — отличная идея.',
       title: 'Аренда недвижимости',
@@ -132,6 +135,7 @@ export const ui = {
       memberRole: 'Должность',
     },
     contact: {
+      waOpen: 'Написать в WhatsApp',
       eyebrow: 'Контакты',
       title: 'Расскажите, что вы ищете.',
       lead: 'Ответим в мессенджере и начнём подбор.',
@@ -151,7 +155,7 @@ export const ui = {
       description:
         'Búsqueda de alquiler en Málaga y Madrid: documentación, selección de opciones, negociación con propietarios y revisión del contrato. Más de 400 contratos firmados.',
     },
-    nav: { search: 'Qué buscamos', process: 'Cómo trabajamos', social: 'Redes sociales', reviews: 'Opiniones', about: 'Sobre nosotros', contact: 'Contacto', cta: 'Escribir' },
+    nav: { search: '¿Qué buscamos?', process: 'Cómo trabajamos', social: 'Redes sociales', reviews: 'Opiniones', about: 'Sobre nosotros', contact: 'Contacto', cta: 'Escribir' },
     hero: {
       slogan: 'Vivir en España es una gran idea.',
       title: 'Alquiler de viviendas',
@@ -243,6 +247,7 @@ export const ui = {
       memberRole: 'Cargo',
     },
     contact: {
+      waOpen: 'Escribir por WhatsApp',
       eyebrow: 'Contacto',
       title: 'Cuéntenos qué busca.',
       lead: 'Le respondemos por mensajería y empezamos la búsqueda.',
@@ -262,7 +267,7 @@ export const ui = {
       description:
         'Пошук оренди житла в Малазі та Мадриді під ключ: документи, підбір варіантів, переговори з власниками та перевірка контракту. Понад 400 підписаних контрактів.',
     },
-    nav: { search: 'Що шукаємо', process: 'Як ми працюємо', social: 'Соцмережі', reviews: 'Відгуки', about: 'Про нас', contact: 'Контакти', cta: 'Написати' },
+    nav: { search: 'Що шукаємо?', process: 'Як ми працюємо', social: 'Соцмережі', reviews: 'Відгуки', about: 'Про нас', contact: 'Контакти', cta: 'Написати' },
     hero: {
       slogan: 'Жити в Іспанії — чудова ідея.',
       title: 'Оренда нерухомості',
@@ -354,6 +359,7 @@ export const ui = {
       memberRole: 'Посада',
     },
     contact: {
+      waOpen: 'Написати у WhatsApp',
       eyebrow: 'Контакти',
       title: 'Розкажіть, що ви шукаєте.',
       lead: 'Відповімо в месенджері і почнемо підбір.',
@@ -373,7 +379,7 @@ export const ui = {
       description:
         'Full-service rental search in Málaga and Madrid: paperwork, shortlisting, negotiation with landlords and contract review. Over 400 signed rental contracts.',
     },
-    nav: { search: 'What we find', process: 'How we work', social: 'Social media', reviews: 'Reviews', about: 'About us', contact: 'Contact', cta: 'Message us' },
+    nav: { search: 'What are you looking for?', process: 'How we work', social: 'Social media', reviews: 'Reviews', about: 'About us', contact: 'Contact', cta: 'Message us' },
     hero: {
       slogan: 'Living in Spain is a great idea.',
       title: 'Property rentals',
@@ -465,6 +471,7 @@ export const ui = {
       memberRole: 'Position',
     },
     contact: {
+      waOpen: 'Message on WhatsApp',
       eyebrow: 'Contact',
       title: 'Tell us what you are looking for.',
       lead: 'We will reply in your messenger and start the search.',

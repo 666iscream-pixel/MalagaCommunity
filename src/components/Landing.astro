@@ -267,7 +267,7 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
           <button class="clip" type="button" data-player aria-label={t.social.watch}>
             <video src={url("/video/intro.mp4#t=0.1")} playsinline preload="auto"></video>
             <span class="video__play" aria-hidden="true"></span>
-            <span class="video__bar" aria-hidden="true"><span></span></span>
+            <span class="video__scrub" data-scrub aria-hidden="true"><span class="video__bar"><span></span></span></span>
           </button>
         </div>
       </section>
@@ -316,7 +316,7 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
               <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg>
               Instagram
             </a>
-            <a class="more__btn" href={site.googleMaps} target="_blank" rel="noopener">
+            <a class="more__btn" href={site.googleReviews} target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>
               Google Maps
             </a>
@@ -419,10 +419,6 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
             <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg></span>
             {t.social.links.instagram}
           </a>
-          <a class="net--telegram" href={site.telegramChat} target="_blank" rel="noopener">
-            <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4 3 11l6 2.2M21 4l-3 15-9-5.8M21 4 9 13.2V19l3.2-3.4"></path></svg></span>
-            {t.social.links.telegram}
-          </a>
           <a class="net--tiktok" href={site.tiktok} target="_blank" rel="noopener">
             <span class="net__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.6a3.6 3.6 0 1 1-3.2-3.6"></path><path d="M14 4c.3 2.4 1.9 4 4.6 4.2"></path></svg></span>
             {t.social.links.tiktok}
@@ -444,9 +440,9 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"></path></svg>
         <span>{t.contact.call}</span>
       </a>
-      <a class="sticky-cta__write" href={wa(t.contact.hello)} target="_blank" rel="noopener">
+      <a class="sticky-cta__write" href={wa(t.contact.hello)} target="_blank" rel="noopener" data-expand>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12Z"></path></svg>
-        <span class="on-desktop">{t.nav.cta}</span>
+        <span class="on-desktop">{t.contact.waOpen}</span>
         <span class="on-mobile">WhatsApp</span>
       </a>
       <a class="sticky-cta__contact" href="#contact">
@@ -1013,9 +1009,10 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
         if (!video) return;
         player.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
         const fill = player.querySelector<HTMLElement>('.video__bar span');
-        video.addEventListener('timeupdate', () => {
+        const render = () => {
           if (fill && video.duration) fill.style.width = `${(video.currentTime / video.duration) * 100}%`;
-        });
+        };
+        video.addEventListener('timeupdate', render);
         video.addEventListener('play', () => {
           player.classList.add('is-playing', 'is-started');
         });
@@ -1024,7 +1021,59 @@ const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURICompo
           player.classList.remove('is-playing', 'is-started');
           video.currentTime = 0.1;
         });
+
+        // перемотка: нажатие или протягивание по полоске прогресса
+        const scrub = player.querySelector<HTMLElement>('[data-scrub]');
+        if (scrub) {
+          let dragging = false;
+          let wasPlaying = false;
+          const seek = (e: PointerEvent) => {
+            const r = scrub.getBoundingClientRect();
+            const ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+            if (video.duration) {
+              video.currentTime = ratio * video.duration;
+              render();
+            }
+          };
+          scrub.addEventListener('click', (e) => e.stopPropagation());
+          scrub.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            dragging = true;
+            wasPlaying = !video.paused;
+            video.pause();
+            scrub.setPointerCapture(e.pointerId);
+            scrub.classList.add('is-dragging');
+            seek(e);
+          });
+          scrub.addEventListener('pointermove', (e) => dragging && seek(e));
+          const release = () => {
+            if (!dragging) return;
+            dragging = false;
+            scrub.classList.remove('is-dragging');
+            if (wasPlaying) video.play();
+          };
+          scrub.addEventListener('pointerup', release);
+          scrub.addEventListener('pointercancel', release);
+        }
       });
+
+      // кнопка WhatsApp на компьютере: первое нажатие раскрывает, второе открывает чат
+      const expand = document.querySelector<HTMLElement>('[data-expand]');
+      if (expand) {
+        let timer = 0;
+        const collapse = () => expand.classList.remove('is-open');
+        expand.addEventListener('click', (e) => {
+          if (!desktop.matches || expand.classList.contains('is-open')) return;
+          e.preventDefault();
+          expand.classList.add('is-open');
+          window.clearTimeout(timer);
+          timer = window.setTimeout(collapse, 5000);
+        });
+        document.addEventListener('click', (e) => {
+          if (!expand.contains(e.target as Node)) collapse();
+        });
+      }
     </script>
   </body>
 </html>

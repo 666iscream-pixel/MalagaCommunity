@@ -25,7 +25,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 110px;
+  scroll-padding-top: 124px;
 }
 
 body {
@@ -64,6 +64,7 @@ h1 {
 }
 
 h2 {
+  text-wrap: balance;
   font-family: var(--font-head);
   font-size: clamp(28px, min(4.2vw, 7svh), 54px);
   font-weight: 800;
@@ -154,11 +155,11 @@ h3 {
 .brand img {
   display: block;
   width: auto;
-  height: 78px;
+  height: 94px;
 }
 
 .brand--footer img {
-  height: 90px;
+  height: 108px;
 }
 
 /* Кнопки и ссылки */
@@ -260,7 +261,7 @@ h3 {
   justify-content: space-between;
   gap: 20px;
   max-width: var(--max);
-  height: 98px;
+  height: 112px;
   margin: 0 auto;
   padding: 0 calc(var(--gutter) + 12px);
 }
@@ -490,7 +491,7 @@ h3 {
 .rail {
   display: flex;
   gap: 16px;
-  margin: clamp(16px, 3svh, 36px) calc(var(--pad) * -1) 0;
+  margin: clamp(24px, 4.5svh, 44px) calc(var(--pad) * -1) 0;
   padding: 0 var(--pad) 8px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
@@ -805,7 +806,7 @@ h3 {
 /* Соцсети */
 .stage {
   /* высота телефона и видео: по высоте экрана, но не мельче 520 и не крупнее 760 */
-  --h: clamp(600px, calc(100svh - 100px), 820px);
+  --h: clamp(520px, calc(100svh - 124px), 820px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1341,20 +1342,43 @@ h3 {
   opacity: 0;
 }
 
-.video__bar {
+.video__scrub {
   position: absolute;
-  right: 22px;
-  bottom: 20px;
-  left: 22px;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.35);
+  right: 14px;
+  bottom: 8px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
   opacity: 0;
-  overflow: hidden;
+  pointer-events: none;
+  cursor: pointer;
+  touch-action: none;
   transition: opacity 0.25s;
 }
 
+.clip.is-started .video__scrub {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.video__bar {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  transition: height 0.15s;
+}
+
+.video__scrub:hover .video__bar,
+.video__scrub.is-dragging .video__bar {
+  height: 7px;
+}
+
 .video__bar span {
+  position: relative;
   display: block;
   width: 0;
   height: 100%;
@@ -1362,7 +1386,23 @@ h3 {
   background: #fff;
 }
 
-.clip.is-started .video__bar {
+.video__bar span::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.15s;
+}
+
+.video__scrub:hover .video__bar span::after,
+.video__scrub.is-dragging .video__bar span::after {
   opacity: 1;
 }
 
@@ -1379,12 +1419,15 @@ h3 {
   gap: 14px;
   padding: 12px 20px 12px 12px;
   border-radius: 22px;
-  background: var(--text);
-  color: #fff;
-  transition: transform 0.2s;
+  background: var(--page);
+  color: var(--text);
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
 
 .ig-cta:hover {
+  background: #ebebef;
   transform: translateY(-2px);
 }
 
@@ -1430,7 +1473,7 @@ h3 {
 }
 
 .ig-cta__text small {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -1976,6 +2019,44 @@ h3 {
   color: #fff;
 }
 
+.sticky-cta .sticky-cta__write {
+  gap: 0;
+  width: auto;
+  min-width: 56px;
+  height: 56px;
+  padding: 0 18px;
+  justify-content: center;
+  transition:
+    transform 0.2s,
+    padding 0.3s,
+    gap 0.3s;
+}
+
+.sticky-cta__write svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sticky-cta__write .on-desktop {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.3s;
+}
+
+.sticky-cta .sticky-cta__write.is-open {
+  gap: 10px;
+  padding: 0 22px 0 18px;
+}
+
+.sticky-cta__write.is-open .on-desktop {
+  max-width: 240px;
+}
+
+.sticky-cta .sticky-cta__call {
+  display: none;
+}
+
 .sticky-cta__write .on-mobile,
 .sticky-cta__contact {
   display: none !important;
@@ -2209,6 +2290,12 @@ html.is-locked {
 }
 
 @media (max-width: 720px) {
+  /* «недвижимости» должно влезать в ширину телефона */
+  h1,
+  .hero h1 {
+    font-size: clamp(28px, 8.4vw, 40px);
+  }
+
   .slider {
     padding: 0;
   }
@@ -2222,7 +2309,7 @@ html.is-locked {
   }
 
   .brand img {
-    height: 60px;
+    height: 72px;
   }
 
   .stage .device {
@@ -2274,8 +2361,16 @@ html.is-locked {
     stroke-width: 1.8;
   }
 
-  .sticky-cta__call {
+  .sticky-cta .sticky-cta__call {
     order: 1;
+    display: flex;
+  }
+
+  .sticky-cta .sticky-cta__write {
+    width: auto;
+    height: 58px;
+    padding: 0;
+    gap: 3px;
   }
 
   .sticky-cta__write {
@@ -2307,7 +2402,7 @@ html.is-locked {
   }
 
   .nav__inner {
-    height: 74px;
+    height: 86px;
   }
 
   .logo {
