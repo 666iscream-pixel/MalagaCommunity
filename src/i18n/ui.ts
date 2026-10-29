@@ -107,8 +107,7 @@ export const ui = {
       title: 'Отзывы клиентов.',
       lead: 'Больше отзывов — в закрепах нашего Telegram-чата.',
       moreTitle: 'Ещё больше отзывов',
-      moreText: 'Отзывы наших клиентов собраны в Instagram, в Google Maps и в закрепах Telegram-группы Malaga Community.',
-      telegramGroup: 'Telegram-группа',
+      moreText: 'Отзывы наших клиентов собраны в Instagram и в Google Maps.',
       more: 'Все отзывы в Instagram',
     },
     sale: {
@@ -219,8 +218,7 @@ export const ui = {
       title: 'Opiniones de clientes.',
       lead: 'Más opiniones en los mensajes fijados de nuestro chat de Telegram.',
       moreTitle: 'Aún más opiniones',
-      moreText: 'Las opiniones de nuestros clientes están en Instagram, en Google Maps y en los mensajes fijados del grupo de Telegram Malaga Community.',
-      telegramGroup: 'Grupo de Telegram',
+      moreText: 'Las opiniones de nuestros clientes están en Instagram y en Google Maps.',
       more: 'Todas las opiniones en Instagram',
     },
     sale: {
@@ -331,8 +329,7 @@ export const ui = {
       title: 'Відгуки клієнтів.',
       lead: 'Більше відгуків — у закріплених повідомленнях нашого Telegram-чату.',
       moreTitle: 'Ще більше відгуків',
-      moreText: 'Відгуки наших клієнтів зібрані в Instagram, у Google Maps і в закріплених повідомленнях Telegram-групи Malaga Community.',
-      telegramGroup: 'Telegram-група',
+      moreText: 'Відгуки наших клієнтів зібрані в Instagram і в Google Maps.',
       more: 'Усі відгуки в Instagram',
     },
     sale: {
@@ -443,8 +440,7 @@ export const ui = {
       title: 'Client reviews.',
       lead: 'More reviews are pinned in our Telegram chat.',
       moreTitle: 'Many more reviews',
-      moreText: 'Our client reviews are collected on Instagram, on Google Maps and in the pinned messages of the Malaga Community Telegram group.',
-      telegramGroup: 'Telegram group',
+      moreText: 'Our client reviews are collected on Instagram and Google Maps.',
       more: 'All reviews on Instagram',
     },
     sale: {
