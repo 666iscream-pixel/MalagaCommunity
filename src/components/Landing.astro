@@ -333,15 +333,25 @@ const igUserId = '62994530065';
             }
           </ul>
         </section>
-        <section class="tile map">
-          <iframe
-            src={`https://maps.google.com/maps?cid=3333495740030976029&output=embed&hl=${lang}`}
-            title={t.about.mapTitle}
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-          ></iframe>
-        </section>
+        <div class="about__side">
+          <section class="tile map">
+            <iframe
+              src={`https://maps.google.com/maps?cid=3333495740030976029&output=embed&hl=${lang}`}
+              title={t.about.mapTitle}
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+          </section>
+          <section class="tile office">
+            <p class="eyebrow">{t.about.officeTitle}</p>
+            <p class="office__address">{site.address}</p>
+            <div class="office__actions">
+              <a class="btn btn--small" href={site.route} target="_blank" rel="noopener">{t.about.route}</a>
+              <a class="link" href={site.googleMaps} target="_blank" rel="noopener">{t.about.openMap}</a>
+            </div>
+          </section>
+        </div>
       </div>
 
         <section class="tile tile--tint contact" id="contact">

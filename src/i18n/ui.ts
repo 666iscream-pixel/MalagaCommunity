@@ -28,6 +28,7 @@ export const site = {
   reviews: 'https://www.instagram.com/arenda_kvartir_malaga_madrid/',
   telegramChat: 'https://t.me/malaga_community',
   googleMaps: 'https://maps.google.com/?cid=3333495740030976029',
+  route: 'https://www.google.com/maps/dir/?api=1&destination=36.7136472%2C-4.4324664',
   // карточка в Google Maps сразу на вкладке «Отзывы»
   googleReviews:
     'https://www.google.com/maps/place/MALAGA+COMMUNITY/@36.7136515,-4.435036,17z/data=!3m1!5s0xd72f75f39fddc63:0x6406f20421786547!4m8!3m7!1s0xd72f724378b3d89:0x2e42f4b6c4d3001d!8m2!3d36.7136472!4d-4.4324664!9m1!1b1!16s%2Fg%2F11wh6xyy73?entry=ttu&g_ep=EgoyMDI2MTAyMC4wIKXMDSoASAFQAw%3D%3D',
@@ -120,6 +121,9 @@ export const ui = {
       closing: 'Снимем с ваших плеч все хлопоты и переживания по поводу поиска аренды.',
       badges: ['Официальный контракт', 'Отзывы клиентов', 'Гарантия результата'],
       mapTitle: 'Офис Malaga Community на карте',
+      officeTitle: 'Наш офис',
+      route: 'Маршрут',
+      openMap: 'Открыть в Google Maps',
     },
     contact: {
       waOpen: 'Написать в WhatsApp',
@@ -219,6 +223,9 @@ export const ui = {
       closing: 'Nos encargamos de todas las gestiones y preocupaciones de la búsqueda de alquiler.',
       badges: ['Contrato oficial', 'Opiniones de clientes', 'Resultado garantizado'],
       mapTitle: 'Oficina de Malaga Community en el mapa',
+      officeTitle: 'Nuestra oficina',
+      route: 'Cómo llegar',
+      openMap: 'Abrir en Google Maps',
     },
     contact: {
       waOpen: 'Escribir por WhatsApp',
@@ -318,6 +325,9 @@ export const ui = {
       closing: 'Знімемо з ваших плечей усі клопоти та переживання щодо пошуку оренди.',
       badges: ['Офіційний контракт', 'Відгуки клієнтів', 'Гарантія результату'],
       mapTitle: 'Офіс Malaga Community на мапі',
+      officeTitle: 'Наш офіс',
+      route: 'Маршрут',
+      openMap: 'Відкрити в Google Maps',
     },
     contact: {
       waOpen: 'Написати у WhatsApp',
@@ -417,6 +427,9 @@ export const ui = {
       closing: 'We take all the hassle and worry of the rental search off your shoulders.',
       badges: ['Official contract', 'Client reviews', 'Guaranteed result'],
       mapTitle: 'Malaga Community office on the map',
+      officeTitle: 'Our office',
+      route: 'Directions',
+      openMap: 'Open in Google Maps',
     },
     contact: {
       waOpen: 'Message on WhatsApp',
