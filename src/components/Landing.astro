@@ -255,7 +255,7 @@ const head = (text: string) => {
           </div>
 
           <button class="clip" type="button" data-player aria-label={t.social.watch}>
-            <video src={url("/video/intro.mp4#t=0.1")} playsinline preload="auto"></video>
+            <video src={url("/video/intro.mp4")} poster={url("/img/intro-poster.jpg")} playsinline preload="metadata"></video>
             <span class="video__play" aria-hidden="true"></span>
             <span class="video__scrub" data-scrub aria-hidden="true"><span class="video__bar"><span></span></span></span>
           </button>
@@ -952,7 +952,7 @@ const head = (text: string) => {
         video.addEventListener('pause', () => player.classList.remove('is-playing'));
         video.addEventListener('ended', () => {
           player.classList.remove('is-playing', 'is-started');
-          video.currentTime = 0.1;
+          video.load(); // снова показать обложку
         });
 
         // перемотка: нажатие или протягивание по полоске прогресса
