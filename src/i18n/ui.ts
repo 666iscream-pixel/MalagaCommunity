@@ -110,8 +110,7 @@ export const ui = {
       more: 'Все отзывы в Instagram',
     },
     about: {
-      eyebrow: 'О нас',
-      title: 'Кто мы',
+      title: 'О нас',
       lead: 'Malaga Community (rent) — это помощь иностранцам в релокации.',
       points: [
         'Помогаем нашим клиентам арендовать жильё в сложных условиях испанского рынка недвижимости.',
@@ -210,8 +209,7 @@ export const ui = {
       more: 'Todas las opiniones en Instagram',
     },
     about: {
-      eyebrow: 'Sobre nosotros',
-      title: 'Quiénes somos',
+      title: 'Sobre nosotros',
       lead: 'Malaga Community (rent) es ayuda para extranjeros en su reubicación.',
       points: [
         'Ayudamos a nuestros clientes a alquilar vivienda en las difíciles condiciones del mercado inmobiliario español.',
@@ -310,8 +308,7 @@ export const ui = {
       more: 'Усі відгуки в Instagram',
     },
     about: {
-      eyebrow: 'Про нас',
-      title: 'Хто ми',
+      title: 'Про нас',
       lead: 'Malaga Community (rent) — це допомога іноземцям у релокації.',
       points: [
         'Допомагаємо нашим клієнтам орендувати житло у складних умовах іспанського ринку нерухомості.',
@@ -410,8 +407,7 @@ export const ui = {
       more: 'All reviews on Instagram',
     },
     about: {
-      eyebrow: 'About us',
-      title: 'Who we are',
+      title: 'About us',
       lead: 'Malaga Community (rent) helps foreigners relocate.',
       points: [
         'We help our clients rent a home in the tough conditions of the Spanish property market.',

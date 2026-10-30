@@ -1544,7 +1544,7 @@ h3 {
   transition: background 0.2s;
 }
 
-.tile--tint .ig-link {
+.tile--tint .way {
   background: #fff;
 }
 
@@ -1566,7 +1566,7 @@ h3 {
 
 /* О нас */
 .about__lead {
-  margin-top: 16px;
+  margin-top: 18px;
   color: var(--text);
   font-weight: 600;
 }
@@ -1601,8 +1601,8 @@ h3 {
 }
 
 .badges {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 20px 0 0;
   padding: 0;
@@ -1611,13 +1611,15 @@ h3 {
 
 .badges a,
 .badges span {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 16px 9px 10px;
-  border-radius: 999px;
+  height: 100%;
+  padding: 10px 12px 10px 10px;
+  border-radius: 16px;
   background: var(--page);
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.25;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -1627,6 +1629,7 @@ h3 {
 .badges a::before,
 .badges span::before {
   content: '';
+  flex-shrink: 0;
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -1642,10 +1645,7 @@ h3 {
 
 /* Карта офиса */
 .map {
-  position: sticky;
-  top: 124px;
-  align-self: start;
-  height: clamp(320px, calc(100svh - 160px), 520px);
+  min-height: 380px;
   padding: 0;
 }
 
@@ -1682,7 +1682,7 @@ h3 {
 }
 
 .duo--about {
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
 }
 
 /* Отзывы */
@@ -2263,17 +2263,15 @@ html.is-locked {
     grid-template-columns: 1fr;
   }
 
-  .map {
-    position: relative;
-    top: auto;
-  }
 }
 
 @media (max-width: 720px) {
+  .badges {
+    grid-template-columns: 1fr;
+  }
+
   .map {
-    position: relative;
-    top: auto;
-    height: 380px;
+    min-height: 380px;
   }
 
   /* «недвижимости» должно влезать в ширину телефона */
