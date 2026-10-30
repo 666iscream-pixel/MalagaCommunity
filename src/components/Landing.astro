@@ -21,9 +21,6 @@ const head = (text: string) => {
   const i = text.indexOf(' ');
   return i < 0 ? [text, ''] : [text.slice(0, i), text.slice(i)];
 };
-// хайлайт «Отзывы» и id аккаунта — для прямых ссылок на сторис с отзывом
-const reviewsHighlight = 'https://www.instagram.com/stories/highlights/18041308036823034/';
-const igUserId = '62994530065';
 ---
 
 <!doctype html>
@@ -276,10 +273,10 @@ const igUserId = '62994530065';
                   <figure class="quote">
                     <blockquote>{r.quote[lang]}</blockquote>
                     <figcaption>
-                      {r.avatar ? <img src={url(r.avatar)} alt="" width="88" height="88" loading="lazy" /> : <span class="quote__initial" aria-hidden="true">{r.author[lang].charAt(0)}</span>}
+                      <img src={url(r.avatar)} alt="" width="160" height="160" loading="lazy" />
                       <span class="quote__who">
                         {r.author[lang]}
-                        <a class="quote__src" href={`${reviewsHighlight}?story_media_id=${r.story}_${igUserId}`} target="_blank" rel="noopener">
+                        <a class="quote__src" href={r.link} target="_blank" rel="noopener">
                           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.2"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"></circle></svg>
                           {t.reviews.source}
                         </a>
