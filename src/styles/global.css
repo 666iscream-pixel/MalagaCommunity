@@ -1365,32 +1365,6 @@ h3 {
   pointer-events: none;
 }
 
-.reel__quality {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 2;
-  height: 30px;
-  padding: 0 10px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.38);
-  color: rgba(255, 255, 255, 0.85);
-  font: 700 12px/1 var(--font);
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: background 0.2s;
-}
-
-.reel__quality:hover {
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.reel__quality.is-hd {
-  color: #fff;
-}
-
 .reel__sound {
   top: 14px;
   right: 14px;
