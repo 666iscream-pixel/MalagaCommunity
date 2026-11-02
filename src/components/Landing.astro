@@ -4,6 +4,7 @@ import '../styles/global.css';
 import { ui, site, locales, langNames, path, type Lang, url } from '../i18n/ui';
 import { listings, gallery, type ListingType } from '../data/listings';
 import { reviews } from '../data/reviews';
+import { videos } from '../data/videos';
 
 interface Props {
   lang: Lang;
@@ -254,11 +255,29 @@ const head = (text: string) => {
             </template>
           </div>
 
-          <button class="clip" type="button" data-player aria-label={t.social.watch}>
-            <video src={url("/video/intro.mp4")} poster={url("/img/intro-poster.jpg")} playsinline preload="metadata"></video>
-            <span class="video__play" aria-hidden="true"></span>
-            <span class="video__scrub" data-scrub aria-hidden="true"><span class="video__bar"><span></span></span></span>
-          </button>
+          <div class="reel" data-reel>
+            <div class="reel__track">
+              {
+                videos.map((v, i) => (
+                  <div class="clip" data-player role="button" tabindex="0" aria-label={`${t.social.watch} ${i + 1}/${videos.length}`}>
+                    <video src={url(v.src)} data-hd={url(v.hd)} poster={i === 0 ? url(v.poster) : undefined} data-poster={url(v.poster)} playsinline preload="none"></video>
+                    <span class="video__play" aria-hidden="true"></span>
+                    <span class="video__scrub" data-scrub aria-hidden="true"><span class="video__bar"><span></span></span></span>
+                  </div>
+                ))
+              }
+            </div>
+            <button class="reel__sound" type="button" data-sound aria-label={t.social.sound} aria-pressed="true">
+              <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path></svg>
+              <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="m17 9 5 6M22 9l-5 6"></path></svg>
+              <span class="reel__sound-label">{t.social.soundOn}</span>
+            </button>
+            <button class="reel__arrow reel__arrow--prev" type="button" data-reel-step="-1" aria-label={t.search.prev}>‹</button>
+            <button class="reel__arrow reel__arrow--next" type="button" data-reel-step="1" aria-label={t.search.next}>›</button>
+            <div class="reel__dots" aria-hidden="true">
+              {videos.map((_, i) => <span class:list={['reel__dot', { 'is-active': i === 0 }]} />)}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -937,16 +956,50 @@ const head = (text: string) => {
 
       const desktop = window.matchMedia('(min-width: 721px)');
 
+      const players: HTMLVideoElement[] = [];
+      // muted — выбор посетителя; unlocked — посетитель уже нажимал (до этого браузер даёт играть только без звука)
+      let muted = false;
+      let unlocked = false;
+      // на компьютере — 1080p, на телефоне остаётся 720p
+      if (window.matchMedia('(min-width: 721px)').matches) {
+        document.querySelectorAll<HTMLVideoElement>('video[data-hd]').forEach((v) => (v.src = v.dataset.hd!));
+      }
+
       document.querySelectorAll<HTMLElement>('[data-player]').forEach((player) => {
         const video = player.querySelector('video');
         if (!video) return;
-        player.addEventListener('click', () => (video.paused ? video.play() : video.pause()));
+        players.push(video);
+        const toggle = () => {
+          // ролик сам играет без звука: нажатие включает звук, а не ставит паузу
+          if (!video.paused && video.muted && !unlocked) {
+            unlocked = true;
+            muted = false;
+            players.forEach((v) => (v.muted = false));
+            return;
+          }
+          if (video.paused) {
+            unlocked = true;
+            video.muted = muted;
+            video.play();
+          } else {
+            video.pause();
+          }
+        };
+        player.addEventListener('click', toggle);
+        player.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        });
         const fill = player.querySelector<HTMLElement>('.video__bar span');
         const render = () => {
           if (fill && video.duration) fill.style.width = `${(video.currentTime / video.duration) * 100}%`;
         };
         video.addEventListener('timeupdate', render);
         video.addEventListener('play', () => {
+          // одновременно играет только один ролик
+          players.forEach((other) => other !== video && other.pause());
           player.classList.add('is-playing', 'is-started');
         });
         video.addEventListener('pause', () => player.classList.remove('is-playing'));
@@ -989,6 +1042,99 @@ const head = (text: string) => {
           scrub.addEventListener('pointerup', release);
           scrub.addEventListener('pointercancel', release);
         }
+      });
+
+      // карусель роликов: стрелки, точки, свайп; при смене ролика предыдущий на паузе
+      document.querySelectorAll<HTMLElement>('[data-reel]').forEach((reel) => {
+        const track = reel.querySelector<HTMLElement>('.reel__track');
+        if (!track) return;
+        const slides = [...track.children] as HTMLElement[];
+        const dots = reel.querySelectorAll<HTMLElement>('.reel__dot');
+        const prev = reel.querySelector<HTMLElement>('[data-reel-step="-1"]');
+        const next = reel.querySelector<HTMLElement>('[data-reel-step="1"]');
+        let current = 0;
+        let visible = false;
+        let settle = 0;
+        const video = (i: number) => slides[i]?.querySelector('video');
+        // автозапуск без звука — кроме заглавного ролика, при «уменьшить движение» и экономии трафика
+        const canAuto =
+          !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+          !(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+        const autoplay = () => {
+          const v = video(current);
+          if (!canAuto || !visible || current === 0 || !v || !v.paused) return;
+          v.muted = muted || !unlocked;
+          v.play().catch(() => {});
+        };
+        const sync = () => {
+          const i = Math.round(track.scrollLeft / track.clientWidth);
+          if (i !== current) {
+            video(current)?.pause();
+            current = i;
+          }
+          window.clearTimeout(settle);
+          settle = window.setTimeout(autoplay, 180);
+          dots.forEach((d, k) => d.classList.toggle('is-active', k === current));
+          // обложки грузим только у текущего и соседних роликов
+          slides.slice(Math.max(0, current - 1), current + 2).forEach((slide) => {
+            const v = slide.querySelector('video');
+            if (v && !v.poster && v.dataset.poster) v.poster = v.dataset.poster;
+          });
+          prev?.classList.toggle('is-off', current === 0);
+          next?.classList.toggle('is-off', current === slides.length - 1);
+        };
+        reel.querySelectorAll<HTMLElement>('[data-reel-step]').forEach((btn) =>
+          btn.addEventListener('click', () => {
+            const to = Math.min(slides.length - 1, Math.max(0, current + Number(btn.dataset.reelStep)));
+            track.scrollTo({ left: to * track.clientWidth, behavior: 'smooth' });
+          }),
+        );
+        track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+        requestAnimationFrame(sync);
+        // при смене размера окна остаёмся на том же ролике
+        new ResizeObserver(() => {
+          track.scrollLeft = current * track.clientWidth;
+        }).observe(track);
+
+        new IntersectionObserver(
+          ([entry]) => {
+            visible = entry.isIntersecting;
+            if (visible) autoplay();
+            else video(current)?.pause();
+          },
+          { threshold: 0.5 },
+        ).observe(reel);
+
+        const sound = reel.querySelector<HTMLElement>('[data-sound]');
+        const update = () => {
+          const v = video(current);
+          const isMuted = v ? v.muted : muted;
+          reel.classList.toggle('is-muted', isMuted);
+          reel.classList.toggle('needs-sound', !!v && !v.paused && v.muted && !unlocked);
+          sound?.setAttribute('aria-pressed', String(!isMuted));
+        };
+        slides.forEach((slide, i) => {
+          const v = slide.querySelector('video');
+          if (!v) return;
+          ['play', 'pause', 'volumechange'].forEach((ev) => v.addEventListener(ev, update));
+          // по окончании — следующий ролик
+          v.addEventListener('ended', () => {
+            if (i === current && i < slides.length - 1) {
+              track.scrollTo({ left: (i + 1) * track.clientWidth, behavior: 'smooth' });
+            }
+          });
+        });
+        sound?.addEventListener('click', () => {
+          if (!unlocked) {
+            unlocked = true;
+            muted = false;
+          } else {
+            muted = !muted;
+          }
+          players.forEach((v) => (v.muted = muted));
+          update();
+        });
+        update();
       });
 
       // кнопка WhatsApp на компьютере: первое нажатие раскрывает, второе открывает чат
