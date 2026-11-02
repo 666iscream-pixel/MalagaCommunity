@@ -260,13 +260,14 @@ const head = (text: string) => {
               {
                 videos.map((v, i) => (
                   <div class="clip" data-player role="button" tabindex="0" aria-label={`${t.social.watch} ${i + 1}/${videos.length}`}>
-                    <video src={url(v.src)} data-hd={url(v.hd)} poster={i === 0 ? url(v.poster) : undefined} data-poster={url(v.poster)} playsinline preload="none"></video>
+                    <video src={url(v.src)} data-sd={url(v.src)} data-hd={url(v.hd)} poster={i === 0 ? url(v.poster) : undefined} data-poster={url(v.poster)} playsinline preload="none"></video>
                     <span class="video__play" aria-hidden="true"></span>
                     <span class="video__scrub" data-scrub aria-hidden="true"><span class="video__bar"><span></span></span></span>
                   </div>
                 ))
               }
             </div>
+            <button class="reel__quality" type="button" data-quality aria-label={t.social.quality}>720p</button>
             <button class="reel__sound" type="button" data-sound aria-label={t.social.sound} aria-pressed="true">
               <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path></svg>
               <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="m17 9 5 6M22 9l-5 6"></path></svg>
@@ -960,10 +961,37 @@ const head = (text: string) => {
       // muted — выбор посетителя; unlocked — посетитель уже нажимал (до этого браузер даёт играть только без звука)
       let muted = false;
       let unlocked = false;
-      // на компьютере — 1080p, на телефоне остаётся 720p
-      if (window.matchMedia('(min-width: 721px)').matches) {
-        document.querySelectorAll<HTMLVideoElement>('video[data-hd]').forEach((v) => (v.src = v.dataset.hd!));
-      }
+      // качество роликов: по умолчанию 1080p на компьютере и 720p на телефоне, выбор запоминается
+      let quality = window.matchMedia('(min-width: 721px)').matches ? 'hd' : 'sd';
+      try {
+        const saved = localStorage.getItem('reelQuality');
+        if (saved === 'hd' || saved === 'sd') quality = saved;
+      } catch {}
+      const applyQuality = () => {
+        document.querySelectorAll<HTMLVideoElement>('video[data-hd]').forEach((v) => {
+          const want = quality === 'hd' ? v.dataset.hd! : v.dataset.sd!;
+          if (v.getAttribute('src') === want) return;
+          const time = v.currentTime;
+          const playing = !v.paused;
+          v.src = want;
+          if (time > 0) v.addEventListener('loadedmetadata', () => (v.currentTime = time), { once: true });
+          if (playing) v.play().catch(() => {});
+        });
+        document.querySelectorAll<HTMLElement>('[data-quality]').forEach((b) => {
+          b.textContent = quality === 'hd' ? '1080p' : '720p';
+          b.classList.toggle('is-hd', quality === 'hd');
+        });
+      };
+      applyQuality();
+      document.querySelectorAll<HTMLElement>('[data-quality]').forEach((b) =>
+        b.addEventListener('click', () => {
+          quality = quality === 'hd' ? 'sd' : 'hd';
+          try {
+            localStorage.setItem('reelQuality', quality);
+          } catch {}
+          applyQuality();
+        }),
+      );
 
       document.querySelectorAll<HTMLElement>('[data-player]').forEach((player) => {
         const video = player.querySelector('video');
