@@ -1360,7 +1360,20 @@ h3 {
   right: 10px;
 }
 
-.reel__arrow.is-off {
+/* на десктопе стрелки появляются при наведении на видео */
+@media (hover: hover) {
+  .reel__arrow {
+    opacity: 0;
+  }
+
+  .reel:hover .reel__arrow,
+  .reel__arrow:focus-visible {
+    opacity: 1;
+  }
+}
+
+.reel__arrow.is-off,
+.reel:hover .reel__arrow.is-off {
   opacity: 0;
   pointer-events: none;
 }
