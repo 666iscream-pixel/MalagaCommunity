@@ -978,6 +978,7 @@ const head = (text: string) => {
             video.play();
           } else {
             video.pause();
+            player.classList.add('show-play');
           }
         };
         player.addEventListener('click', toggle);
@@ -995,6 +996,7 @@ const head = (text: string) => {
         video.addEventListener('play', () => {
           // одновременно играет только один ролик
           players.forEach((other) => other !== video && other.pause());
+          player.classList.remove('show-play');
           player.classList.add('is-playing', 'is-started');
         });
         video.addEventListener('pause', () => player.classList.remove('is-playing'));
@@ -1055,12 +1057,20 @@ const head = (text: string) => {
         const canAuto =
           !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
           !(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+        // видна ли карусель хотя бы наполовину — считаем на месте, не дожидаясь событий браузера
+        const onScreen = () => {
+          const r = reel.getBoundingClientRect();
+          const shown = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+          return shown >= r.height / 2;
+        };
         const autoplay = () => {
           const v = video(current);
-          if (!canAuto || !visible || current === 0 || !v || !v.paused) return;
+          if (!canAuto || !(visible || onScreen()) || current === 0 || !v || !v.paused) return;
           v.muted = muted || !unlocked;
-          v.play().catch(() => {});
+          // браузер не дал запустить сам — показываем кнопку Play
+          v.play().catch(() => slides[current]?.classList.add('show-play'));
         };
+        if (canAuto) reel.classList.add('is-auto');
         const sync = () => {
           const i = Math.round(track.scrollLeft / track.clientWidth);
           if (i !== current) {

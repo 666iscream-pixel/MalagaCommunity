@@ -1488,7 +1488,8 @@ h3 {
   transform: translate(-50%, -50%) scale(1.08);
 }
 
-.clip.is-playing .video__play {
+.clip.is-playing .video__play,
+.reel.is-auto .clip:not(:first-child):not(.show-play) .video__play {
   opacity: 0;
 }
 
