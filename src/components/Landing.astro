@@ -1145,6 +1145,11 @@ const head = (text: string) => {
           const v = slide.querySelector('video');
           if (!v) return;
           ['play', 'pause', 'volumechange'].forEach((ev) => v.addEventListener(ev, update));
+          // пока ролик играет, заранее подгружаем начало следующего — он стартует без задержки
+          v.addEventListener('playing', () => {
+            const nextVideo = video(i + 1);
+            if (nextVideo && nextVideo.preload === 'none') nextVideo.preload = 'auto';
+          });
           // по окончании — следующий ролик
           v.addEventListener('ended', () => {
             if (i === current && i < slides.length - 1) {
