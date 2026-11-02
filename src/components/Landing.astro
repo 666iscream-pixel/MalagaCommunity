@@ -961,8 +961,8 @@ const head = (text: string) => {
       // muted — выбор посетителя; unlocked — посетитель уже нажимал (до этого браузер даёт играть только без звука)
       let muted = false;
       let unlocked = false;
-      // качество роликов: по умолчанию 1080p на компьютере и 720p на телефоне, выбор запоминается
-      let quality = window.matchMedia('(min-width: 721px)').matches ? 'hd' : 'sd';
+      // качество роликов: по умолчанию 720p (хостинг отдаёт 1080p не везде достаточно быстро), 1080p — по кнопке; выбор запоминается
+      let quality = 'sd';
       try {
         const saved = localStorage.getItem('reelQuality');
         if (saved === 'hd' || saved === 'sd') quality = saved;
