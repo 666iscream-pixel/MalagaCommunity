@@ -680,10 +680,10 @@ const head = (text: string) => {
             stat(feed.mediaCount ?? (d.postsCount ? Number(d.postsCount) : undefined), d.posts);
             stat(feed.followersCount, d.followers);
             stat(feed.followsCount, d.following);
+            // аватар с именем в строку, счётчики — отдельной строкой на всю ширину, чтобы помещались
             const who = el('div', 'ig__who');
             who.append(el('p', 'ig__name', feed.username ?? ''));
             if (d.title) who.append(el('p', 'ig__title', d.title));
-            who.append(stats);
             head.append(who);
 
             const bio = el('p', 'ig__bio', feed.biography ?? '');
@@ -885,7 +885,7 @@ const head = (text: string) => {
             });
 
             const hl = document.querySelector<HTMLTemplateElement>('[data-ig-hl]')?.content.cloneNode(true);
-            ig.replaceChildren(head, bio, open, ...(hl ? [hl] : []), grid);
+            ig.replaceChildren(head, stats, bio, open, ...(hl ? [hl] : []), grid);
 
             // Ленту можно тянуть мышью вверх-вниз; если тянули, клик по посту не срабатывает
             let dragging = false;
