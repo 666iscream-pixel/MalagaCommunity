@@ -1818,7 +1818,9 @@ h3 {
   transition: background 0.2s;
 }
 
-.tile--tint .way {
+.tile--tint .way,
+.tile--tint .net,
+.tile--tint .ig-cta {
   background: #fff;
 }
 
