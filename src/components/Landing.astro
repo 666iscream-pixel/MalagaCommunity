@@ -1122,7 +1122,7 @@ const head = (text: string) => {
         const next = reel.querySelector<HTMLElement>('[data-reel-step="1"]');
         const video = (i: number) => slides[i]?.querySelector('video');
         const step = () => (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth);
-        const perView = () => Math.max(1, Math.round((track.clientWidth + 14) / step()));
+        const perView = () => Math.max(1, Math.floor((track.clientWidth + 16) / step())); // целиком видимые ролики
         let first = 0;
         let active = 0;
 

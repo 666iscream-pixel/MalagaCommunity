@@ -813,6 +813,8 @@ h3 {
 .stage {
   /* высота телефона и видео: по высоте экрана, но не мельче 520 и не крупнее 760 */
   --h: clamp(420px, calc(100svh - 170px), 820px);
+  /* телефон выше роликов: под роликами ещё точки */
+  --phone-h: clamp(460px, calc(100svh - 124px), 860px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -823,7 +825,7 @@ h3 {
 .device {
   position: relative;
   display: block;
-  height: var(--h);
+  height: var(--phone-h, var(--h));
   aspect-ratio: 9 / 17.5;
   padding: 11px;
   border-radius: 52px;
