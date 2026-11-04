@@ -261,19 +261,18 @@ const head = (text: string) => {
             <div class="reel__track">
               {
                 videos.map((v, i) => (
-                  <div class="clip" data-player role="button" tabindex="0" aria-label={`${t.social.watch} ${i + 1}/${videos.length}`}>
+                  <div class:list={['clip', { 'is-current': i === 0 }]} data-player role="button" tabindex="0" aria-label={`${t.social.watch} ${i + 1}/${videos.length}`}>
                     <video src={url(v.src)} poster={i === 0 ? url(v.poster) : undefined} data-poster={url(v.poster)} playsinline preload="none"></video>
                     <span class="video__play" aria-hidden="true"></span>
                     <span class="video__scrub" data-scrub aria-hidden="true"><span class="video__bar"><span></span></span></span>
+                    <button class="clip__sound" type="button" data-sound aria-label={t.social.sound}>
+                      <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path></svg>
+                      <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="m17 9 5 6M22 9l-5 6"></path></svg>
+                    </button>
                   </div>
                 ))
               }
             </div>
-            <button class="reel__sound" type="button" data-sound aria-label={t.social.sound} aria-pressed="true">
-              <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path></svg>
-              <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4Z"></path><path d="m17 9 5 6M22 9l-5 6"></path></svg>
-              <span class="reel__sound-label">{t.social.soundOn}</span>
-            </button>
             <button class="reel__arrow reel__arrow--prev" type="button" data-reel-step="-1" aria-label={t.search.prev}>‹</button>
             <button class="reel__arrow reel__arrow--next" type="button" data-reel-step="1" aria-label={t.search.next}>›</button>
             <div class="reel__dots" aria-hidden="true">
@@ -1112,7 +1111,8 @@ const head = (text: string) => {
         }
       });
 
-      // карусель роликов: стрелки, точки, свайп; при смене ролика предыдущий на паузе
+      // карусель роликов: на компьютере видно три ролика, на телефоне один; все запускаются по нажатию.
+      // Активный (играющий или последний запущенный) подсвечен, по окончании запускается следующий.
       document.querySelectorAll<HTMLElement>('[data-reel]').forEach((reel) => {
         const track = reel.querySelector<HTMLElement>('.reel__track');
         if (!track) return;
@@ -1120,95 +1120,79 @@ const head = (text: string) => {
         const dots = reel.querySelectorAll<HTMLElement>('.reel__dot');
         const prev = reel.querySelector<HTMLElement>('[data-reel-step="-1"]');
         const next = reel.querySelector<HTMLElement>('[data-reel-step="1"]');
-        let current = 0;
-        // шаг между роликами — ширина ролика плюс отступ (ролики уже карусели: по бокам видны соседние)
-        const step = () => (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth);
-        let visible = false;
-        let settle = 0;
         const video = (i: number) => slides[i]?.querySelector('video');
-        // автозапуск без звука — кроме заглавного ролика, при «уменьшить движение» и экономии трафика
-        const canAuto =
-          !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
-          !(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-        // видна ли карусель хотя бы наполовину — считаем на месте, не дожидаясь событий браузера
-        const onScreen = () => {
-          const r = reel.getBoundingClientRect();
-          const shown = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
-          return shown >= r.height / 2;
+        const step = () => (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth);
+        const perView = () => Math.max(1, Math.round((track.clientWidth + 14) / step()));
+        let first = 0;
+        let active = 0;
+
+        const setActive = (i: number) => {
+          active = i;
+          slides.forEach((slide, k) => slide.classList.toggle('is-current', k === i));
+          dots.forEach((d, k) => d.classList.toggle('is-active', k === i));
         };
-        const autoplay = () => {
-          const v = video(current);
-          if (!canAuto || !(visible || onScreen()) || current === 0 || !v || !v.paused) return;
-          v.muted = muted || !unlocked;
-          // браузер не дал запустить сам — показываем кнопку Play
-          v.play().catch(() => slides[current]?.classList.add('show-play'));
+        const scrollTo = (i: number) => track.scrollTo({ left: i * step(), behavior: 'smooth' });
+        // если ролик за краем — подкручиваем ленту, чтобы он был виден
+        const reveal = (i: number) => {
+          if (i < first) scrollTo(i);
+          else if (i > first + perView() - 1) scrollTo(i - perView() + 1);
         };
-        if (canAuto) reel.classList.add('is-auto');
         const sync = () => {
-          const i = Math.round(track.scrollLeft / step());
-          if (i !== current) {
-            video(current)?.pause();
-            current = i;
+          first = Math.round(track.scrollLeft / step());
+          // на телефоне ролик один — активный тот, что в центре
+          if (perView() === 1 && first !== active) {
+            video(active)?.pause();
+            setActive(first);
           }
-          window.clearTimeout(settle);
-          settle = window.setTimeout(autoplay, 180);
-          dots.forEach((d, k) => d.classList.toggle('is-active', k === current));
-          slides.forEach((slide, k) => slide.classList.toggle('is-current', k === current));
           // обложки грузим только у видимых роликов и ближайших соседей
-          slides.slice(Math.max(0, current - 1), current + 4).forEach((slide) => {
+          slides.slice(Math.max(0, first - 1), first + perView() + 1).forEach((slide) => {
             const v = slide.querySelector('video');
             if (v && !v.poster && v.dataset.poster) v.poster = v.dataset.poster;
           });
-          prev?.classList.toggle('is-off', current === 0);
-          next?.classList.toggle('is-off', current === slides.length - 1);
+          prev?.classList.toggle('is-off', first === 0);
+          next?.classList.toggle('is-off', first >= slides.length - perView());
         };
         reel.querySelectorAll<HTMLElement>('[data-reel-step]').forEach((btn) =>
           btn.addEventListener('click', () => {
-            const to = Math.min(slides.length - 1, Math.max(0, current + Number(btn.dataset.reelStep)));
-            track.scrollTo({ left: to * step(), behavior: 'smooth' });
+            const to = Math.min(slides.length - perView(), Math.max(0, first + Number(btn.dataset.reelStep)));
+            scrollTo(to);
           }),
         );
         track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
-        // клик по соседнему ролику — сначала переносим его в центр
+        // на телефоне нажатие на край соседнего ролика сначала переносит его в центр
         track.addEventListener(
           'click',
           (e) => {
+            if (perView() !== 1) return;
             const slide = (e.target as HTMLElement).closest<HTMLElement>('.clip');
             const i = slide ? slides.indexOf(slide) : -1;
-            if (i < 0 || i === current) return;
+            if (i < 0 || i === active) return;
             e.stopPropagation();
             e.preventDefault();
-            track.scrollTo({ left: i * step(), behavior: 'smooth' });
+            scrollTo(i);
           },
           true,
         );
         requestAnimationFrame(sync);
-        // при смене размера окна остаёмся на том же ролике
+        // при смене размера окна остаёмся на том же месте
         new ResizeObserver(() => {
-          track.scrollLeft = current * step();
+          track.scrollLeft = first * step();
+          sync();
         }).observe(track);
+        // карусель ушла с экрана — пауза
+        new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting) video(active)?.pause();
+        }).observe(reel);
 
-        new IntersectionObserver(
-          ([entry]) => {
-            visible = entry.isIntersecting;
-            if (visible) autoplay();
-            else video(current)?.pause();
-          },
-          { threshold: 0.5 },
-        ).observe(reel);
-
-        const sound = reel.querySelector<HTMLElement>('[data-sound]');
-        const update = () => {
-          const v = video(current);
-          const isMuted = v ? v.muted : muted;
-          reel.classList.toggle('is-muted', isMuted);
-          reel.classList.toggle('needs-sound', !!v && !v.paused && v.muted && !unlocked);
-          sound?.setAttribute('aria-pressed', String(!isMuted));
-        };
+        const update = () => reel.classList.toggle('is-muted', muted);
         slides.forEach((slide, i) => {
           const v = slide.querySelector('video');
           if (!v) return;
-          ['play', 'pause', 'volumechange'].forEach((ev) => v.addEventListener(ev, update));
+          v.addEventListener('play', () => {
+            setActive(i);
+            reveal(i);
+          });
+          v.addEventListener('volumechange', update);
           // пока ролик играет, заранее подгружаем начало следующего — он стартует без задержки
           v.addEventListener('playing', () => {
             const nextVideo = video(i + 1);
@@ -1216,20 +1200,21 @@ const head = (text: string) => {
           });
           // по окончании — следующий ролик
           v.addEventListener('ended', () => {
-            if (i === current && i < slides.length - 1) {
-              track.scrollTo({ left: (i + 1) * step(), behavior: 'smooth' });
-            }
+            const nextVideo = video(i + 1);
+            if (i !== active || !nextVideo) return;
+            setActive(i + 1);
+            reveal(i + 1);
+            if (!nextVideo.poster && nextVideo.dataset.poster) nextVideo.poster = nextVideo.dataset.poster;
+            nextVideo.muted = muted;
+            nextVideo.play().catch(() => {});
           });
-        });
-        sound?.addEventListener('click', () => {
-          if (!unlocked) {
-            unlocked = true;
-            muted = false;
-          } else {
+          slide.querySelector<HTMLElement>('[data-sound]')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             muted = !muted;
-          }
-          players.forEach((v) => (v.muted = muted));
-          update();
+            unlocked = true;
+            players.forEach((p) => (p.muted = muted));
+            update();
+          });
         });
         update();
       });

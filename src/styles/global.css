@@ -1445,22 +1445,19 @@ h3 {
 }
 
 /* Карусель роликов */
-/* полка роликов: на компьютере текущий слева, следующие в ряд справа; на телефоне — по центру */
+/* полка роликов: на компьютере три ролика в ряд, на телефоне один по центру */
 .reel {
-  --slide: calc(var(--h) * 9 / 16);
-  --center: calc(var(--slide) / 2);
   position: relative;
   flex: 1 1 auto;
-  min-width: var(--slide);
-  height: var(--h);
+  min-width: 0;
+  container-type: inline-size;
 }
 
 .reel__track {
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: 100%;
-  padding: 0 calc(100% - var(--slide)) 0 0;
+  gap: 14px;
+  padding: 6px 3px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -1472,11 +1469,11 @@ h3 {
 
 .clip {
   position: relative;
-  flex: 0 0 var(--slide);
-  height: 100%;
-  border-radius: var(--radius);
+  flex: 0 0 min(calc(var(--h) * 9 / 16), calc((100cqw - 34px) / 3));
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius-sm);
   background: #000;
-  opacity: 0.7;
+  opacity: 0.8;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   cursor: pointer;
@@ -1488,17 +1485,59 @@ h3 {
 }
 
 .clip:not(.is-current):hover {
-  opacity: 0.9;
+  opacity: 1;
 }
 
+/* активный ролик подсвечен бирюзовой обводкой */
 .clip.is-current {
-  box-shadow: 0 30px 60px -24px rgba(7, 80, 95, 0.5);
+  box-shadow:
+    0 0 0 3px var(--accent),
+    0 24px 48px -20px rgba(7, 80, 95, 0.55);
   opacity: 1;
   transform: none;
 }
 
-.reel__arrow,
-.reel__sound {
+.clip__sound {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.clip.is-started .clip__sound {
+  display: grid;
+}
+
+.clip__sound svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.clip__sound .off,
+.reel.is-muted .clip__sound .on {
+  display: none;
+}
+
+.reel.is-muted .clip__sound .off {
+  display: block;
+}
+
+.reel__arrow {
   position: absolute;
   z-index: 2;
   display: grid;
@@ -1523,18 +1562,12 @@ h3 {
   transform: translateY(-50%);
 }
 
-.reel__arrow:hover,
-.reel__sound:hover {
+.reel__arrow:hover {
   background: rgba(0, 0, 0, 0.6);
 }
 
-.reel__arrow--prev {
-  left: calc(var(--center) - var(--slide) / 2 + 10px);
-}
-
-/* «вперёд» — у правого края полки, поверх следующих роликов */
-.reel__arrow--next {
-  right: 12px;
+/* стрелки — белые кнопки по краям ряда, как у карточек объектов */
+.reel .reel__arrow {
   width: 48px;
   height: 48px;
   background: #fff;
@@ -1543,86 +1576,31 @@ h3 {
   font-size: 28px;
 }
 
-.reel__arrow--next:hover {
+.reel .reel__arrow:hover {
   background: #fff;
   transform: translateY(-50%) scale(1.08);
 }
 
-/* на десктопе стрелки появляются при наведении на видео */
-@media (hover: hover) {
-  .reel__arrow--prev {
-    opacity: 0;
-  }
-
-  .reel:hover .reel__arrow--prev,
-  .reel__arrow--prev:focus-visible {
-    opacity: 1;
-  }
+.reel__arrow--prev {
+  left: -10px;
 }
 
+.reel__arrow--next {
+  right: -10px;
+}
+
+/* на десктопе стрелки появляются при наведении на видео */
 .reel__arrow.is-off,
 .reel:hover .reel__arrow.is-off {
   opacity: 0;
   pointer-events: none;
 }
 
-.reel__sound {
-  top: 14px;
-  left: calc(var(--center) + var(--slide) / 2 - 50px);
-  width: 36px;
-  height: 36px;
-}
-
-.reel__sound svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.reel__sound .off,
-.reel.is-muted .reel__sound .on,
-.reel__sound-label {
-  display: none;
-}
-
-/* ролик играет сам без звука — крупная кнопка «Включить звук» */
-.reel.needs-sound .reel__sound {
-  top: auto;
-  left: var(--center);
-  bottom: 56px;
-  gap: 8px;
-  width: auto;
-  height: 42px;
-  padding: 0 18px 0 14px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.62);
-  font-size: 15px;
-  font-weight: 600;
-  white-space: nowrap;
-  transform: translateX(-50%);
-  grid-auto-flow: column;
-}
-
-.reel.needs-sound .reel__sound-label {
-  display: inline;
-}
-
-.reel.needs-sound .video__play {
-  opacity: 0;
-}
-
-.reel.is-muted .reel__sound .off {
-  display: block;
-}
-
 .reel__dots {
   position: absolute;
   top: 16px;
-  left: var(--center);
+  left: 50%;
+  display: none;
   z-index: 2;
   display: flex;
   gap: 4px;
@@ -1689,9 +1667,17 @@ h3 {
   transform: translate(-50%, -50%) scale(1.08);
 }
 
-.clip.is-playing .video__play,
-.reel.is-auto .clip:not(:first-child):not(.show-play) .video__play {
+.clip.is-playing .video__play {
   opacity: 0;
+}
+
+.reel .video__play {
+  width: 64px;
+  height: 64px;
+}
+
+.reel .video__play::after {
+  border-width: 11px 0 11px 18px;
 }
 
 .video__scrub {
@@ -2191,8 +2177,6 @@ h3 {
   color: var(--accent);
 }
 
-
-
 .more {
   display: flex;
   flex-direction: column;
@@ -2256,13 +2240,11 @@ h3 {
   transform: translateX(4px);
 }
 
-
 .more__btn svg {
   width: 20px;
   height: 20px;
   stroke-width: 2.1;
 }
-
 
 /* Способы связи */
 .ways {
@@ -2838,22 +2820,24 @@ html.is-locked {
   }
 
   .reel {
-    --slide: min(60vw, 280px);
-    --center: 50%;
     width: 100%;
-    min-width: 0;
-    height: calc(var(--slide) * 16 / 9);
   }
 
   .reel__track {
     gap: 8px;
-    padding: 0 calc(50% - var(--slide) / 2);
+    padding: 6px calc(50% - min(30vw, 140px));
   }
 
   .clip {
+    flex-basis: min(60vw, 280px);
     opacity: 0.45;
     scroll-snap-align: center;
     transform: scale(0.92);
+  }
+
+  .reel__dots {
+    display: flex;
+    top: 22px;
   }
 
   .reel {
