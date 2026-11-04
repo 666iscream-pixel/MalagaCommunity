@@ -812,7 +812,7 @@ h3 {
 /* Соцсети */
 .stage {
   /* высота телефона и видео: по высоте экрана, но не мельче 520 и не крупнее 760 */
-  --h: clamp(520px, calc(100svh - 124px), 820px);
+  --h: clamp(420px, calc(100svh - 170px), 820px);
   display: flex;
   align-items: center;
   justify-content: center;
