@@ -816,7 +816,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(20px, 6vw, 96px);
+  gap: clamp(20px, 3vw, 40px);
   margin-top: 36px;
 }
 
@@ -1445,9 +1445,10 @@ h3 {
 }
 
 /* Карусель роликов */
-/* полка роликов, как Reels: текущий в центре, по бокам уменьшенные соседние */
+/* полка роликов: на компьютере текущий слева, следующие в ряд справа; на телефоне — по центру */
 .reel {
   --slide: calc(var(--h) * 9 / 16);
+  --center: calc(var(--slide) / 2);
   position: relative;
   flex: 1 1 auto;
   min-width: var(--slide);
@@ -1457,9 +1458,9 @@ h3 {
 .reel__track {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   height: 100%;
-  padding: 0 calc(50% - var(--slide) / 2);
+  padding: 0 calc(100% - var(--slide)) 0 0;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -1475,16 +1476,19 @@ h3 {
   height: 100%;
   border-radius: var(--radius);
   background: #000;
-  opacity: 0.45;
-  scroll-snap-align: center;
+  opacity: 0.7;
+  scroll-snap-align: start;
   scroll-snap-stop: always;
   cursor: pointer;
   overflow: hidden;
-  transform: scale(0.84);
   transition:
     transform 0.35s,
     opacity 0.35s,
     box-shadow 0.35s;
+}
+
+.clip:not(.is-current):hover {
+  opacity: 0.9;
 }
 
 .clip.is-current {
@@ -1525,21 +1529,33 @@ h3 {
 }
 
 .reel__arrow--prev {
-  left: calc(50% - var(--slide) / 2 + 10px);
+  left: calc(var(--center) - var(--slide) / 2 + 10px);
 }
 
+/* «вперёд» — у правого края полки, поверх следующих роликов */
 .reel__arrow--next {
-  right: calc(50% - var(--slide) / 2 + 10px);
+  right: 12px;
+  width: 48px;
+  height: 48px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  color: var(--text);
+  font-size: 28px;
+}
+
+.reel__arrow--next:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.08);
 }
 
 /* на десктопе стрелки появляются при наведении на видео */
 @media (hover: hover) {
-  .reel__arrow {
+  .reel__arrow--prev {
     opacity: 0;
   }
 
-  .reel:hover .reel__arrow,
-  .reel__arrow:focus-visible {
+  .reel:hover .reel__arrow--prev,
+  .reel__arrow--prev:focus-visible {
     opacity: 1;
   }
 }
@@ -1552,7 +1568,7 @@ h3 {
 
 .reel__sound {
   top: 14px;
-  right: calc(50% - var(--slide) / 2 + 14px);
+  left: calc(var(--center) + var(--slide) / 2 - 50px);
   width: 36px;
   height: 36px;
 }
@@ -1576,7 +1592,7 @@ h3 {
 /* ролик играет сам без звука — крупная кнопка «Включить звук» */
 .reel.needs-sound .reel__sound {
   top: auto;
-  right: 50%;
+  left: var(--center);
   bottom: 56px;
   gap: 8px;
   width: auto;
@@ -1587,7 +1603,7 @@ h3 {
   font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
-  transform: translateX(50%);
+  transform: translateX(-50%);
   grid-auto-flow: column;
 }
 
@@ -1606,7 +1622,7 @@ h3 {
 .reel__dots {
   position: absolute;
   top: 16px;
-  left: 50%;
+  left: var(--center);
   z-index: 2;
   display: flex;
   gap: 4px;
@@ -2823,6 +2839,7 @@ html.is-locked {
 
   .reel {
     --slide: min(60vw, 280px);
+    --center: 50%;
     width: 100%;
     min-width: 0;
     height: calc(var(--slide) * 16 / 9);
@@ -2830,9 +2847,12 @@ html.is-locked {
 
   .reel__track {
     gap: 8px;
+    padding: 0 calc(50% - var(--slide) / 2);
   }
 
   .clip {
+    opacity: 0.45;
+    scroll-snap-align: center;
     transform: scale(0.92);
   }
 

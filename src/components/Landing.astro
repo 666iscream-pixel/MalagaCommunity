@@ -1154,8 +1154,8 @@ const head = (text: string) => {
           settle = window.setTimeout(autoplay, 180);
           dots.forEach((d, k) => d.classList.toggle('is-active', k === current));
           slides.forEach((slide, k) => slide.classList.toggle('is-current', k === current));
-          // обложки грузим только у текущего и соседних роликов
-          slides.slice(Math.max(0, current - 1), current + 2).forEach((slide) => {
+          // обложки грузим только у видимых роликов и ближайших соседей
+          slides.slice(Math.max(0, current - 1), current + 4).forEach((slide) => {
             const v = slide.querySelector('video');
             if (v && !v.poster && v.dataset.poster) v.poster = v.dataset.poster;
           });
