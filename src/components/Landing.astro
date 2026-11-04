@@ -218,6 +218,8 @@ const head = (text: string) => {
               data-posts-count={site.igPostsCount}
               data-profile={site.instagram}
               data-open={t.social.open}
+              data-follow={t.social.follow}
+              data-message={t.social.message}
               data-followers={t.social.followers}
               data-following={t.social.following}
               data-posts={t.social.posts}
@@ -625,6 +627,7 @@ const head = (text: string) => {
         type Feed = {
           username?: string;
           biography?: string;
+          website?: string;
           profilePictureUrl?: string;
           followersCount?: number;
           followsCount?: number;
@@ -661,6 +664,25 @@ const head = (text: string) => {
             const posts = feed.posts ?? [];
             if (!posts.length) return;
 
+            const icon = (path: string, cls = '') => {
+              const span = el('span', cls);
+              span.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${path}</svg>`;
+              return span;
+            };
+            const compact = (value: number) =>
+              value >= 10000
+                ? new Intl.NumberFormat(lang, { notation: 'compact', maximumFractionDigits: 1 }).format(value)
+                : value.toLocaleString(lang);
+
+            // верхняя панель, как в приложении
+            const bar = el('div', 'ig__bar');
+            bar.append(
+              icon('<path d="M15 5 8 12l7 7"/>'),
+              el('strong', '', feed.username ?? ''),
+              icon('<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>', 'is-fill'),
+            );
+
+            // аватар слева, имя и счётчики справа
             const head = el('div', 'ig__head');
             if (feed.profilePictureUrl) {
               const avatar = el('img', 'ig__avatar');
@@ -668,29 +690,61 @@ const head = (text: string) => {
               avatar.alt = '';
               head.append(avatar);
             }
+            const who = el('div', 'ig__who');
+            if (d.title) who.append(el('p', 'ig__name', d.title));
             const stats = el('div', 'ig__stats');
             const stat = (value: number | undefined, label = '') => {
               if (value === undefined) return;
               const box = el('span');
-              // как в Instagram: 10,4 тыс. вместо 10 400
-              const shown = value >= 10000 ? new Intl.NumberFormat(lang, { notation: 'compact', maximumFractionDigits: 1 }).format(value) : value.toLocaleString(lang);
-              box.append(el('strong', '', shown), el('small', '', label));
+              box.append(el('strong', '', compact(value)), el('small', '', label));
               stats.append(box);
             };
             stat(feed.mediaCount ?? (d.postsCount ? Number(d.postsCount) : undefined), d.posts);
             stat(feed.followersCount, d.followers);
             stat(feed.followsCount, d.following);
-            // аватар с именем в строку, счётчики — отдельной строкой на всю ширину, чтобы помещались
-            const who = el('div', 'ig__who');
-            who.append(el('p', 'ig__name', feed.username ?? ''));
-            if (d.title) who.append(el('p', 'ig__title', d.title));
+            who.append(stats);
             head.append(who);
 
             const bio = el('p', 'ig__bio', feed.biography ?? '');
-            const open = el('a', 'ig__open', d.open);
-            open.href = d.profile ?? '#';
-            open.target = '_blank';
-            open.rel = 'noopener';
+            const extra: HTMLElement[] = [];
+            if (feed.website) {
+              const site = el('a', 'ig__link');
+              site.href = feed.website;
+              site.target = '_blank';
+              site.rel = 'noopener';
+              site.append(
+                icon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
+                el('span', '', feed.website.replace(/^https?:\/\//, '').replace(/\/$/, '')),
+              );
+              extra.push(site);
+            }
+
+            // кнопки «Подписаться» и «Сообщение»
+            const btns = el('div', 'ig__btns');
+            const btn = (label: string | undefined, href: string, cls: string) => {
+              const a = el('a', cls, label);
+              a.href = href;
+              a.target = '_blank';
+              a.rel = 'noopener';
+              btns.append(a);
+            };
+            btn(d.follow, d.profile ?? '#', 'ig__btn ig__btn--primary');
+            btn(d.message, `https://ig.me/m/${feed.username ?? ''}`, 'ig__btn');
+            const more = el('a', 'ig__btn ig__btn--icon');
+            more.href = d.profile ?? '#';
+            more.target = '_blank';
+            more.rel = 'noopener';
+            more.setAttribute('aria-label', d.open ?? 'Instagram');
+            more.append(icon('<circle cx="10" cy="8" r="3.5"/><path d="M3.5 19c.8-3.5 3.4-5.5 6.5-5.5S15.7 15.5 16.5 19M19 8v6M16 11h6"/>'));
+            btns.append(more);
+
+            // вкладки: сетка, Reels, отметки
+            const tabs = el('div', 'ig__tabs');
+            tabs.append(
+              icon('<rect x="3.5" y="3.5" width="17" height="17" rx="1.5"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/>', 'is-active'),
+              icon('<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M3.5 8.5h17M9.5 3.5l2.5 5M15 3.5l2.5 5"/><path d="M10.4 11.8v4.8l4.1-2.4Z" class="fill"/>'),
+              icon('<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><circle cx="12" cy="10" r="3"/><path d="M6.5 20.5c1-2.8 3-4.3 5.5-4.3s4.5 1.5 5.5 4.3"/>'),
+            );
 
             const mediaNode = (m: Media) => {
               if (m.mediaType === 'VIDEO' && m.mediaUrl) {
@@ -885,7 +939,7 @@ const head = (text: string) => {
             });
 
             const hl = document.querySelector<HTMLTemplateElement>('[data-ig-hl]')?.content.cloneNode(true);
-            ig.replaceChildren(head, stats, bio, open, ...(hl ? [hl] : []), grid);
+            ig.replaceChildren(bar, head, bio, ...extra, btns, ...(hl ? [hl] : []), tabs, grid);
 
             // Ленту можно тянуть мышью вверх-вниз; если тянули, клик по посту не срабатывает
             let dragging = false;
@@ -907,7 +961,7 @@ const head = (text: string) => {
                 dragged = true;
                 ig.classList.add('is-dragging');
               }
-              if (dragged) ig.scrollTop = startTop - dy;
+              if (dragged) ig.scrollTop = startTop - dy / (parseFloat(getComputedStyle(ig).zoom) || 1);
             });
             window.addEventListener('pointerup', () => {
               dragging = false;
@@ -924,7 +978,19 @@ const head = (text: string) => {
               true,
             );
             ig.hidden = false;
-            ig.closest('.device')?.classList.add('has-feed');
+            const device = ig.closest<HTMLElement>('.device');
+            device?.classList.add('has-feed');
+            if (device) {
+              // 360px — ширина телефона, плюс место под полосу прокрутки, чтобы ничего не обрезалось
+              const fit = () => {
+                device.style.setProperty('--ig-zoom', '1');
+                const bar = ig.offsetWidth - ig.clientWidth;
+                device.style.setProperty('--ig-zoom', String((device.clientWidth - 22) / (360 + bar)));
+              };
+              new ResizeObserver(fit).observe(device);
+              fit();
+              requestAnimationFrame(() => (ig.scrollTop = 0));
+            }
           })
           .catch(() => {
             // лента недоступна — остаётся скриншот

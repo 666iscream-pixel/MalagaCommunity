@@ -853,11 +853,18 @@ h3 {
   transform: none;
 }
 
+/* Профиль свёрстан под ширину телефона (360px) и масштабируется под экран макета через --ig-zoom */
+.device .ig {
+  zoom: var(--ig-zoom, 1);
+  inset: calc(11px / var(--ig-zoom, 1));
+  border-radius: calc(42px / var(--ig-zoom, 1));
+}
+
 .ig {
-  padding: 40px 0 0;
+  padding: 34px 0 0;
   background: #000;
   color: #f5f5f7;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.35;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -876,11 +883,11 @@ h3 {
 }
 
 .ig::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .ig::-webkit-scrollbar-thumb {
-  border-radius: 4px;
+  border-radius: 3px;
   background: rgba(255, 255, 255, 0.35);
 }
 
@@ -888,69 +895,146 @@ h3 {
   display: none;
 }
 
-.ig__head {
+.ig__bar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 0 16px;
-}
-
-.ig__avatar {
-  flex-shrink: 0;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.ig__stats {
-  display: flex;
-  justify-content: space-around;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 10px;
+  height: 44px;
   padding: 0 12px;
 }
 
-.ig__stats span {
-  display: grid;
-  text-align: center;
-}
-
-.ig__stats strong {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.ig__stats small {
-  color: #a1a1a6;
-  font-size: 10px;
-  white-space: nowrap;
-}
-
-.ig__who {
-  display: grid;
-  min-width: 0;
-}
-
-.ig__name {
+.ig__bar strong {
+  flex: 1;
   overflow: hidden;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.ig__title {
-  margin-top: 1px;
+.ig__bar svg,
+.ig__link svg,
+.ig__btn svg,
+.ig__tabs svg {
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ig__bar svg {
+  width: 24px;
+  height: 24px;
+}
+
+.ig__bar .is-fill svg,
+.ig__tabs .fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+.ig__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 16px 0;
+}
+
+.ig__avatar {
+  flex-shrink: 0;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ig__who {
+  display: grid;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ig__name {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.ig__stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ig__stats span {
+  display: grid;
+}
+
+.ig__stats strong {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ig__stats small {
+  color: #f5f5f7;
   font-size: 12px;
-  font-weight: 600;
-  line-height: 1.3;
+  white-space: nowrap;
 }
 
 .ig__bio {
-  margin-top: 10px;
+  margin-top: 12px;
   padding: 0 16px;
   white-space: pre-line;
+}
+
+.ig__link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  padding: 0 16px;
+  color: #e0f1ff;
+  font-weight: 600;
+}
+
+.ig__link svg {
+  width: 15px;
+  height: 15px;
+}
+
+.ig__btns {
+  display: flex;
+  gap: 6px;
+  margin: 14px 16px 16px;
+}
+
+.ig__btn {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  height: 34px;
+  border-radius: 9px;
+  background: #363636;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ig__btn--primary {
+  background: #0095f6;
+}
+
+.ig__btn--icon {
+  flex: 0 0 34px;
+}
+
+.ig__btn--icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .ig__open {
@@ -964,10 +1048,33 @@ h3 {
   text-align: center;
 }
 
+.ig__tabs {
+  display: flex;
+  border-top: 1px solid #262626;
+}
+
+.ig__tabs span {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  height: 46px;
+  color: #8e8e93;
+}
+
+.ig__tabs span.is-active {
+  box-shadow: inset 0 -1px 0 #f5f5f7;
+  color: #f5f5f7;
+}
+
+.ig__tabs svg {
+  width: 24px;
+  height: 24px;
+}
+
 .ig__hl {
   display: flex;
-  gap: 14px;
-  margin: 0 0 14px;
+  gap: 16px;
+  margin: 0 0 16px;
   padding: 0 16px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -978,15 +1085,14 @@ h3 {
   flex-shrink: 0;
   justify-items: center;
   gap: 5px;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 12px;
 }
 
 .ig__hl-ring {
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
+  width: 66px;
+  height: 66px;
   padding: 3px;
   border: 1.5px solid #48484a;
   border-radius: 50%;
@@ -1266,7 +1372,7 @@ h3 {
 .ig__post {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 4;
   background: #1d1d1f;
 }
 
@@ -1278,10 +1384,10 @@ h3 {
 
 .ig__badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 18px;
-  height: 18px;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
 }
 
