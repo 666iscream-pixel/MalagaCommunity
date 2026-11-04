@@ -2576,6 +2576,15 @@ html.is-locked {
 }
 
 @media (max-width: 720px) {
+  /* край следующей карточки виден — понятно, что ленту можно листать */
+  .card {
+    flex-basis: 72vw;
+  }
+
+  .rail {
+    gap: 12px;
+  }
+
   .badges {
     grid-template-columns: 1fr;
   }
