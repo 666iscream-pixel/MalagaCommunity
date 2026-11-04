@@ -1457,7 +1457,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 6px 3px;
+  padding: 0;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -1473,7 +1473,7 @@ h3 {
   aspect-ratio: 9 / 16;
   border-radius: var(--radius-sm);
   background: #000;
-  opacity: 0.8;
+  opacity: 0.72;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   cursor: pointer;
@@ -1488,11 +1488,8 @@ h3 {
   opacity: 1;
 }
 
-/* активный ролик подсвечен бирюзовой обводкой */
+/* активный ролик — яркий, остальные слегка приглушены */
 .clip.is-current {
-  box-shadow:
-    0 0 0 3px var(--accent),
-    0 24px 48px -20px rgba(7, 80, 95, 0.55);
   opacity: 1;
   transform: none;
 }
@@ -2825,7 +2822,7 @@ html.is-locked {
 
   .reel__track {
     gap: 8px;
-    padding: 6px calc(50% - min(30vw, 140px));
+    padding: 0 calc(50% - min(30vw, 140px));
   }
 
   .clip {
