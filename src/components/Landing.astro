@@ -603,7 +603,7 @@ const head = (text: string) => {
 
       // Лента Instagram из Behold: только на компьютере, на телефоне остаётся переход в Instagram
       const ig = document.querySelector<HTMLElement>('[data-ig]');
-      const feedId = new URLSearchParams(location.search).get('feed') || ig?.dataset.feed;
+      const feedId = ig?.dataset.feed;
       if (ig && feedId && window.matchMedia('(min-width: 721px)').matches) {
         type Size = { mediaUrl: string };
         type Media = {
@@ -655,8 +655,7 @@ const head = (text: string) => {
         };
         const lang = document.documentElement.lang;
         const d = ig.dataset;
-        const localTest = location.hostname === 'localhost' && feedId.startsWith('/');
-        fetch(localTest ? feedId : `https://feeds.behold.so/${encodeURIComponent(feedId)}`)
+        fetch(`https://feeds.behold.so/${encodeURIComponent(feedId)}`)
           .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
           .then((feed: Feed) => {
             const posts = feed.posts ?? [];

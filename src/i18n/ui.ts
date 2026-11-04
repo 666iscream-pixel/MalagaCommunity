@@ -15,7 +15,7 @@ export const site = {
   telegram: 'https://t.me/+34633123856',
   instagram: 'https://www.instagram.com/arenda_kvartir_malaga_madrid/',
   // ID ленты Behold (behold.so). Пусто — в телефоне показывается скриншот профиля.
-  beholdFeed: '',
+  beholdFeed: 'U0FGIEqpE1zpCemYQtRw',
   // Behold не отдаёт имя профиля и число публикаций — задаём вручную (число обновлять время от времени)
   igTitle: 'АРЕНДА КВАРТИР MALAGA-MADRID SPAIN',
   igPostsCount: 705,
