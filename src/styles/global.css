@@ -1565,6 +1565,7 @@ h3 {
 
 /* стрелки — белые кнопки по краям ряда, как у карточек объектов */
 .reel .reel__arrow {
+  top: calc(50% - 12px);
   width: 48px;
   height: 48px;
   background: #fff;
@@ -1594,31 +1595,26 @@ h3 {
 }
 
 .reel__dots {
-  position: absolute;
-  top: 16px;
-  left: 50%;
-  display: none;
-  z-index: 2;
   display: flex;
-  gap: 4px;
-  transform: translateX(-50%);
-  pointer-events: none;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
 }
 
 .reel__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.45);
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+  cursor: pointer;
   transition:
     width 0.25s,
     background 0.25s;
 }
 
 .reel__dot.is-active {
-  width: 18px;
-  border-radius: 999px;
-  background: #fff;
+  width: 22px;
+  background: var(--text);
 }
 
 @media (hover: none) {
@@ -2832,10 +2828,6 @@ html.is-locked {
     transform: scale(0.92);
   }
 
-  .reel__dots {
-    display: flex;
-    top: 22px;
-  }
 
   .reel {
     order: -1;

@@ -1129,7 +1129,6 @@ const head = (text: string) => {
         const setActive = (i: number) => {
           active = i;
           slides.forEach((slide, k) => slide.classList.toggle('is-current', k === i));
-          dots.forEach((d, k) => d.classList.toggle('is-active', k === i));
         };
         const scrollTo = (i: number) => track.scrollTo({ left: i * step(), behavior: 'smooth' });
         // если ролик за краем — подкручиваем ленту, чтобы он был виден
@@ -1149,6 +1148,8 @@ const head = (text: string) => {
             const v = slide.querySelector('video');
             if (v && !v.poster && v.dataset.poster) v.poster = v.dataset.poster;
           });
+          // точки показывают, какие ролики сейчас на экране
+          dots.forEach((d, k) => d.classList.toggle('is-active', k >= first && k < first + perView()));
           prev?.classList.toggle('is-off', first === 0);
           next?.classList.toggle('is-off', first >= slides.length - perView());
         };
@@ -1159,6 +1160,7 @@ const head = (text: string) => {
           }),
         );
         track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+        dots.forEach((d, k) => d.addEventListener('click', () => scrollTo(Math.min(k, slides.length - perView()))));
         // на телефоне нажатие на край соседнего ролика сначала переносит его в центр
         track.addEventListener(
           'click',
