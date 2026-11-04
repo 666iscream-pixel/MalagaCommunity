@@ -393,8 +393,14 @@ h3 {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(90deg, rgba(6, 22, 32, 0.86) 0%, rgba(6, 22, 32, 0.5) 55%, rgba(6, 22, 32, 0.12) 100%),
-    linear-gradient(0deg, rgba(6, 22, 32, 0.6), transparent 55%);
+    linear-gradient(90deg, rgba(6, 22, 32, 0.66) 0%, rgba(6, 22, 32, 0.32) 55%, rgba(6, 22, 32, 0.04) 100%),
+    linear-gradient(0deg, rgba(6, 22, 32, 0.42), transparent 55%);
+}
+
+/* фото светлее — текст держим лёгкой тенью */
+.hero h1,
+.hero p {
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.35);
 }
 
 .hero > :not(.tile__bg) {
@@ -2725,7 +2731,7 @@ html.is-locked {
   }
 
   .hero::before {
-    background: linear-gradient(180deg, rgba(6, 22, 32, 0.7), rgba(6, 22, 32, 0.85));
+    background: linear-gradient(180deg, rgba(6, 22, 32, 0.5), rgba(6, 22, 32, 0.6));
   }
 
   .tabs {
