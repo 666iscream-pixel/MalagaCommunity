@@ -1621,7 +1621,8 @@ h3 {
   background: var(--text);
 }
 
-@media (hover: none) {
+/* на телефоне ролики листают свайпом; на планшете стрелки остаются */
+@media (hover: none) and (max-width: 720px) {
   .reel__arrow {
     display: none;
   }
