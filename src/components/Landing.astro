@@ -602,10 +602,10 @@ const head = (text: string) => {
         });
       }
 
-      // Лента Instagram из Behold: только на компьютере, на телефоне остаётся переход в Instagram
+      // Лента Instagram из Behold: только на компьютере, на планшете и телефоне остаётся переход в Instagram
       const ig = document.querySelector<HTMLElement>('[data-ig]');
       const feedId = ig?.dataset.feed;
-      if (ig && feedId && window.matchMedia('(min-width: 721px)').matches) {
+      if (ig && feedId && window.matchMedia('(min-width: 1101px)').matches) {
         type Size = { mediaUrl: string };
         type Media = {
           mediaType: string;
