@@ -2649,6 +2649,18 @@ html.is-locked {
 }
 
 @media (max-width: 1100px) {
+  /* планшет: Instagram, TikTok и Facebook одной строкой на всю ширину */
+  #social .socials {
+    grid-template-columns: 1.6fr 1fr;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  #social .nets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
   .nav__links {
     display: none;
   }
@@ -2679,6 +2691,10 @@ html.is-locked {
 }
 
 @media (max-width: 720px) {
+  #social .socials {
+    grid-template-columns: 1fr;
+  }
+
   .stage__col--phone {
     display: none;
   }
