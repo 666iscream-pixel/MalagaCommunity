@@ -206,6 +206,11 @@ const head = (text: string) => {
         </div>
 
         <div class="stage">
+          <div class="stage__col stage__col--phone">
+          <p class="stage__label stage__label--hint">
+            {t.social.feedHint}
+            <svg class="stage__arrow" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 5c9-2 17 3 18 13"></path><path d="m15 14 6 7 5-8"></path></svg>
+          </p>
           <div class="device">
             <a class="device__shot" href={site.instagram} target="_blank" rel="noopener" aria-label={t.social.open}>
               <img src={url("/img/instagram.jpg")} alt="Instagram @arenda_kvartir_malaga_madrid" loading="lazy" />
@@ -256,8 +261,10 @@ const head = (text: string) => {
               </div>
             </template>
           </div>
+          </div>
 
           <div class="reel" data-reel>
+            <p class="stage__label">{t.social.videosTitle}</p>
             <div class="reel__track">
               {
                 videos.map((v, i) => (

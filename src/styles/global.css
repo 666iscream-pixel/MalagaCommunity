@@ -813,14 +813,56 @@ h3 {
 /* Соцсети */
 .stage {
   /* высота телефона и видео: по высоте экрана, но не мельче 520 и не крупнее 760 */
-  --h: clamp(420px, calc(100svh - 170px), 820px);
+  --h: clamp(400px, calc(100svh - 206px), 820px);
   /* телефон выше роликов: под роликами ещё точки */
-  --phone-h: clamp(460px, calc(100svh - 124px), 860px);
+  --phone-h: clamp(440px, calc(100svh - 160px), 860px);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: clamp(20px, 3vw, 40px);
   margin-top: 36px;
+}
+
+/* подписи над телефоном и над роликами */
+.stage__col {
+  display: grid;
+  flex-shrink: 0;
+  justify-items: center;
+}
+
+.stage__label {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stage__label--hint {
+  /* одной строкой, стрелка сразу после текста и уходит вниз к телефону */
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 2px;
+  justify-self: center;
+  margin: 0 0 14px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stage__arrow {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-top: 6px;
+  margin-bottom: -18px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .device {
@@ -1569,7 +1611,8 @@ h3 {
 
 /* стрелки — белые кнопки по краям ряда, как у карточек объектов */
 .reel .reel__arrow {
-  top: calc(50% - 12px);
+  /* по центру роликов: сверху подпись, снизу точки */
+  top: calc(50% - 4px);
   width: 48px;
   height: 48px;
   background: #fff;
@@ -2622,7 +2665,7 @@ html.is-locked {
 
   /* планшет: телефон и ролики рядом, одной высоты (у телефона +место под точки) */
   .stage {
-    --h: clamp(400px, min(calc(75vw - 40px), calc(100svh - 170px)), 680px);
+    --h: clamp(380px, min(calc(75vw - 40px), calc(100svh - 206px)), 680px);
     --phone-h: calc(var(--h) + 46px);
   }
 
@@ -2636,6 +2679,10 @@ html.is-locked {
 }
 
 @media (max-width: 720px) {
+  .stage__col--phone {
+    display: none;
+  }
+
   /* край следующей карточки виден — понятно, что ленту можно листать */
   .card {
     flex-basis: 72vw;
