@@ -2619,13 +2619,10 @@ html.is-locked {
     grid-template-columns: 1fr;
   }
 
-  /* планшет: без телефона с Instagram, ролики на всю ширину */
+  /* планшет: телефон и ролики рядом, одной высоты (у телефона +место под точки) */
   .stage {
-    --h: clamp(420px, calc(100svh - 170px), 680px);
-  }
-
-  .stage .device {
-    display: none;
+    --h: clamp(400px, min(calc(75vw - 40px), calc(100svh - 170px)), 680px);
+    --phone-h: calc(var(--h) + 46px);
   }
 
   .duo,
